@@ -1,0 +1,48 @@
+C:\Projects\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.deps.json
+C:\Projects\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.dll
+C:\Projects\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.pdb
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.AssemblyReference.cache
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfoInputs.cache
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfo.cs
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.CoreCompileInputs.cache
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.dll
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\refint\TeamFinderModels.dll
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.pdb
+C:\Projects\TeamFinderModels\obj\Debug\net8.0\ref\TeamFinderModels.dll
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.deps.json
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.dll
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.pdb
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.AssemblyReference.cache
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.GeneratedMSBuildEditorConfig.editorconfig
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfoInputs.cache
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfo.cs
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.CoreCompileInputs.cache
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.dll
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\refint\TeamFinderModels.dll
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.pdb
+E:\Assist Tech Challenge 2024\BackEnd\CodeCraftDB3\TeamFinderModels\obj\Debug\net8.0\ref\TeamFinderModels.dll
+C:\Users\Administrator\Desktop\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.deps.json
+C:\Users\Administrator\Desktop\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.dll
+C:\Users\Administrator\Desktop\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.pdb
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.AssemblyReference.cache
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfoInputs.cache
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfo.cs
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.dll
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\refint\TeamFinderModels.dll
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.pdb
+C:\Users\Administrator\Desktop\TeamFinderModels\obj\Debug\net8.0\ref\TeamFinderModels.dll
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.deps.json
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.dll
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.pdb
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.AssemblyReference.cache
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfoInputs.cache
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfo.cs
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.CoreCompileInputs.cache
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.dll
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\refint\TeamFinderModels.dll
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.pdb
+C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\ref\TeamFinderModels.dll

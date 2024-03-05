@@ -1,0 +1,6 @@
+@TeamFinderAPI_HostAddress = http://localhost:5208
+
+GET {{TeamFinderAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
