@@ -4,7 +4,6 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using TeamFinderRepository;
     using TeamFinderModels;
     using MongoDB.Bson;
     using MongoDB.Driver;

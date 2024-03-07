@@ -1335,11 +1335,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj",
+      "projectUniqueName": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj",
       "projectName": "TeamFinderModels",
-      "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj",
+      "projectPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj",
       "packagesPath": "C:\\Users\\dinco\\.nuget\\packages\\",
-      "outputPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\obj\\",
+      "outputPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\dinco\\AppData\\Roaming\\NuGet\\NuGet.Config",

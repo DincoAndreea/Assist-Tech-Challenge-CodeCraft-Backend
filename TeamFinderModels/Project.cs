@@ -8,6 +8,23 @@ using System.Threading.Tasks;
 
 namespace TeamFinderModels
 {
+    public struct SkillRequirements
+    {
+        [BsonElement("SkillID"), BsonRepresentation(BsonType.ObjectId)]
+        public string SkillID { get; set; }
+
+        [BsonElement("MinimumLevel"), BsonRepresentation(BsonType.String)]
+        public string MinimumLevel { get; set; }
+    }
+
+    public struct ProjectRoles
+    {
+        [BsonElement("TeamRoleID"), BsonRepresentation(BsonType.ObjectId)]
+        public string TeamRoleID { get; set; }
+
+        [BsonElement("MembersCount"), BsonRepresentation(BsonType.Int32)]
+        public int MembersCount { get; set; }
+    }
     public class Project
     {
         [BsonId]
@@ -32,17 +49,11 @@ namespace TeamFinderModels
         [BsonElement("Description"), BsonRepresentation(BsonType.String)]
         public string Description { get; set; }
 
-        [BsonElement("SkillRequirements"), BsonRepresentation(BsonType.String)]
-        public string[] SkillRequirements { get; set; }
+        [BsonElement("SkillRequirements"), BsonRepresentation(BsonType.Document)]
+        public SkillRequirements[] SkillRequirements { get; set; }
 
         [BsonElement("TechnologyStack"), BsonRepresentation(BsonType.String)]
         public string[] TechnologyStack { get; set; }
-
-        [BsonElement("ActiveMemberIDs"), BsonRepresentation(BsonType.ObjectId)]
-        public string[] ActiveMemberIDs { get; set; }
-
-        [BsonElement("PastMemberIDs"), BsonRepresentation(BsonType.ObjectId)]
-        public string[] PastMemberIDs { get; set; }
 
         [BsonElement("ProjectManagerID"), BsonRepresentation(BsonType.ObjectId)]
         public string ProjectManagerID { get; set; }
@@ -50,7 +61,7 @@ namespace TeamFinderModels
         [BsonElement("OrganizationID"), BsonRepresentation(BsonType.ObjectId)]
         public string OrganizationID { get; set; }
 
-        [BsonElement("ProjectRoleIDs"), BsonRepresentation(BsonType.ObjectId)]
-        public string[] ProjectRoleIDs { get; set; }
+        [BsonElement("ProjectRoles"), BsonRepresentation(BsonType.Document)]
+        public ProjectRoles[] ProjectRoles { get; set; }
     }
 }

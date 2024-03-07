@@ -470,16 +470,16 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.ProjectRoleController",
-    "Method": "GetProjectRoles",
-    "RelativePath": "api/ProjectRole",
+    "ContainingType": "TeamFinderAPI.Controllers.ProjectTeamController",
+    "Method": "GetProjectTeams",
+    "RelativePath": "api/ProjectTeam",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[TeamFinderModels.ProjectRole, TeamFinderModels, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TeamFinderModels.ProjectTeam, TeamFinderModels, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -490,41 +490,41 @@
     ]
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.ProjectRoleController",
-    "Method": "Addprojectrole",
-    "RelativePath": "api/ProjectRole",
+    "ContainingType": "TeamFinderAPI.Controllers.ProjectTeamController",
+    "Method": "AddprojectTeam",
+    "RelativePath": "api/ProjectTeam",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "projectrole",
-        "Type": "TeamFinderModels.ProjectRole",
+        "Name": "projectTeam",
+        "Type": "TeamFinderModels.ProjectTeam",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.ProjectRoleController",
-    "Method": "UpdateProjectRole",
-    "RelativePath": "api/ProjectRole",
+    "ContainingType": "TeamFinderAPI.Controllers.ProjectTeamController",
+    "Method": "UpdateProjectTeam",
+    "RelativePath": "api/ProjectTeam",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "projectrole",
-        "Type": "TeamFinderModels.ProjectRole",
+        "Name": "projectTeam",
+        "Type": "TeamFinderModels.ProjectTeam",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.ProjectRoleController",
-    "Method": "GetProjectRole",
-    "RelativePath": "api/ProjectRole/{id}",
+    "ContainingType": "TeamFinderAPI.Controllers.ProjectTeamController",
+    "Method": "GetProjectTeam",
+    "RelativePath": "api/ProjectTeam/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -537,7 +537,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "TeamFinderModels.ProjectRole",
+        "Type": "TeamFinderModels.ProjectTeam",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -548,9 +548,9 @@
     ]
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.ProjectRoleController",
-    "Method": "DeleteProjectRole",
-    "RelativePath": "api/ProjectRole/{id}",
+    "ContainingType": "TeamFinderAPI.Controllers.ProjectTeamController",
+    "Method": "DeleteProjectTeam",
+    "RelativePath": "api/ProjectTeam/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -658,16 +658,16 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.SkillValidationController",
-    "Method": "GetSkillValidations",
-    "RelativePath": "api/SkillValidation",
+    "ContainingType": "TeamFinderAPI.Controllers.SkillCategoryController",
+    "Method": "GetSkillCategorys",
+    "RelativePath": "api/SkillCategory",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.IEnumerable\u00601[[TeamFinderModels.SkillValidation, TeamFinderModels, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TeamFinderModels.SkillCategory, TeamFinderModels, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -678,41 +678,41 @@
     ]
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.SkillValidationController",
-    "Method": "Addskillvalidation",
-    "RelativePath": "api/SkillValidation",
+    "ContainingType": "TeamFinderAPI.Controllers.SkillCategoryController",
+    "Method": "AddskillCategory",
+    "RelativePath": "api/SkillCategory",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "skillvalidation",
-        "Type": "TeamFinderModels.SkillValidation",
+        "Name": "skillCategory",
+        "Type": "TeamFinderModels.SkillCategory",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.SkillValidationController",
-    "Method": "UpdateSkillValidation",
-    "RelativePath": "api/SkillValidation",
+    "ContainingType": "TeamFinderAPI.Controllers.SkillCategoryController",
+    "Method": "UpdateSkillCategory",
+    "RelativePath": "api/SkillCategory",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "skillvalidation",
-        "Type": "TeamFinderModels.SkillValidation",
+        "Name": "skillCategory",
+        "Type": "TeamFinderModels.SkillCategory",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.SkillValidationController",
-    "Method": "GetSkillValidation",
-    "RelativePath": "api/SkillValidation/{id}",
+    "ContainingType": "TeamFinderAPI.Controllers.SkillCategoryController",
+    "Method": "GetSkillCategory",
+    "RelativePath": "api/SkillCategory/{id}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -725,7 +725,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "TeamFinderModels.SkillValidation",
+        "Type": "TeamFinderModels.SkillCategory",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -736,9 +736,9 @@
     ]
   },
   {
-    "ContainingType": "TeamFinderAPI.Controllers.SkillValidationController",
-    "Method": "DeleteSkillValidation",
-    "RelativePath": "api/SkillValidation/{id}",
+    "ContainingType": "TeamFinderAPI.Controllers.SkillCategoryController",
+    "Method": "DeleteSkillCategory",
+    "RelativePath": "api/SkillCategory/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,

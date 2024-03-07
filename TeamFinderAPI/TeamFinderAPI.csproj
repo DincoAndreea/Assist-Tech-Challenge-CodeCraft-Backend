@@ -16,7 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\TeamFinderDataAccess\TeamFinderDataAccess.csproj" />
     <ProjectReference Include="..\TeamFinderModels\TeamFinderModels.csproj" />
-    <ProjectReference Include="..\TeamFinderRepository\TeamFinderRepository.csproj" />
   </ItemGroup>
 
 </Project>

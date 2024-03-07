@@ -46,3 +46,15 @@ C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels
 C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\refint\TeamFinderModels.dll
 C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.pdb
 C:\Users\flori\Downloads\MDB4\TeamFinderModels\obj\Debug\net8.0\ref\TeamFinderModels.dll
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.deps.json
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.dll
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\bin\Debug\net8.0\TeamFinderModels.pdb
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.AssemblyReference.cache
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.GeneratedMSBuildEditorConfig.editorconfig
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfoInputs.cache
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.AssemblyInfo.cs
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.csproj.CoreCompileInputs.cache
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.dll
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\refint\TeamFinderModels.dll
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\TeamFinderModels.pdb
+E:\Assist Tech Challenge 2024\BackEnd\MDB4\MDB4\TeamFinderModels\obj\Debug\net8.0\ref\TeamFinderModels.dll

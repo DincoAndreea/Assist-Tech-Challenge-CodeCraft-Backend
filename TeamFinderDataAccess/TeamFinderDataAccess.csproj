@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TeamFinderModels\TeamFinderModels.csproj" />
-    <ProjectReference Include="..\TeamFinderRepository\TeamFinderRepository.csproj" />
   </ItemGroup>
 
 </Project>

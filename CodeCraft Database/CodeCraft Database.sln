@@ -7,9 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamFinderAPI", "..\TeamFin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamFinderModels", "..\TeamFinderModels\TeamFinderModels.csproj", "{2881AA41-0CE0-42B9-B562-4536D6526A38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamFinderRepository", "..\TeamFinderRepository\TeamFinderRepository.csproj", "{7EFB8642-6A1E-4475-9A6E-865090BFDD24}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamFinderDataAccess", "..\TeamFinderDataAccess\TeamFinderDataAccess.csproj", "{CD9909FD-042E-4D17-B2FE-2E4F29BD4E59}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeamFinderDataAccess", "..\TeamFinderDataAccess\TeamFinderDataAccess.csproj", "{CD9909FD-042E-4D17-B2FE-2E4F29BD4E59}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{2881AA41-0CE0-42B9-B562-4536D6526A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2881AA41-0CE0-42B9-B562-4536D6526A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2881AA41-0CE0-42B9-B562-4536D6526A38}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7EFB8642-6A1E-4475-9A6E-865090BFDD24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EFB8642-6A1E-4475-9A6E-865090BFDD24}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EFB8642-6A1E-4475-9A6E-865090BFDD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EFB8642-6A1E-4475-9A6E-865090BFDD24}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD9909FD-042E-4D17-B2FE-2E4F29BD4E59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD9909FD-042E-4D17-B2FE-2E4F29BD4E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD9909FD-042E-4D17-B2FE-2E4F29BD4E59}.Release|Any CPU.ActiveCfg = Release|Any CPU

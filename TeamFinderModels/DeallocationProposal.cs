@@ -15,8 +15,8 @@ namespace TeamFinderModels
         [BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
 
-        [BsonElement("EmployeeID"), BsonRepresentation(BsonType.ObjectId)]
-        public string EmployeeID { get; set; }
+        [BsonElement("UserID"), BsonRepresentation(BsonType.ObjectId)]
+        public string UserID { get; set; }
 
         [BsonElement("ProjectID"), BsonRepresentation(BsonType.ObjectId)]
         public string ProjectID { get; set; }

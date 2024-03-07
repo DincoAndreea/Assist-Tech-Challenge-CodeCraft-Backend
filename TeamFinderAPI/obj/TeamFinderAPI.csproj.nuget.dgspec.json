@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderAPI\\TeamFinderAPI.csproj": {}
+    "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderAPI\\TeamFinderAPI.csproj": {}
   },
   "projects": {
-    "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderAPI\\TeamFinderAPI.csproj": {
+    "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderAPI\\TeamFinderAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderAPI\\TeamFinderAPI.csproj",
+        "projectUniqueName": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderAPI\\TeamFinderAPI.csproj",
         "projectName": "TeamFinderAPI",
-        "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderAPI\\TeamFinderAPI.csproj",
+        "projectPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderAPI\\TeamFinderAPI.csproj",
         "packagesPath": "C:\\Users\\dinco\\.nuget\\packages\\",
-        "outputPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderAPI\\obj\\",
+        "outputPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\dinco\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,14 +28,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj": {
-                "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj"
+              "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj": {
+                "projectPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj"
               },
-              "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj": {
-                "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj"
-              },
-              "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderRepository\\TeamFinderRepository.csproj": {
-                "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderRepository\\TeamFinderRepository.csproj"
+              "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj": {
+                "projectPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj"
               }
             }
           }
@@ -95,14 +92,14 @@
         }
       }
     },
-    "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj": {
+    "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj",
+        "projectUniqueName": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj",
         "projectName": "TeamFinderDataAccess",
-        "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj",
+        "projectPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderDataAccess\\TeamFinderDataAccess.csproj",
         "packagesPath": "C:\\Users\\dinco\\.nuget\\packages\\",
-        "outputPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderDataAccess\\obj\\",
+        "outputPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderDataAccess\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\dinco\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -119,11 +116,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj": {
-                "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj"
-              },
-              "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderRepository\\TeamFinderRepository.csproj": {
-                "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderRepository\\TeamFinderRepository.csproj"
+              "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj": {
+                "projectPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj"
               }
             }
           }
@@ -172,14 +166,14 @@
         }
       }
     },
-    "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj": {
+    "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj",
+        "projectUniqueName": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj",
         "projectName": "TeamFinderModels",
-        "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj",
+        "projectPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj",
         "packagesPath": "C:\\Users\\dinco\\.nuget\\packages\\",
-        "outputPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\obj\\",
+        "outputPath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\dinco\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -228,88 +222,6 @@
             "MongoDB.EntityFrameworkCore": {
               "target": "Package",
               "version": "[7.0.0-preview.1, )"
-            }
-          },
-          "imports": [
-            "net461",
-            "net462",
-            "net47",
-            "net471",
-            "net472",
-            "net48",
-            "net481"
-          ],
-          "assetTargetFallback": true,
-          "warn": true,
-          "frameworkReferences": {
-            "Microsoft.NETCore.App": {
-              "privateAssets": "all"
-            }
-          },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
-        }
-      }
-    },
-    "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderRepository\\TeamFinderRepository.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderRepository\\TeamFinderRepository.csproj",
-        "projectName": "TeamFinderRepository",
-        "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderRepository\\TeamFinderRepository.csproj",
-        "packagesPath": "C:\\Users\\dinco\\.nuget\\packages\\",
-        "outputPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderRepository\\obj\\",
-        "projectStyle": "PackageReference",
-        "configFilePaths": [
-          "C:\\Users\\dinco\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
-        ],
-        "originalTargetFrameworks": [
-          "net8.0"
-        ],
-        "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {}
-        },
-        "frameworks": {
-          "net8.0": {
-            "targetAlias": "net8.0",
-            "projectReferences": {
-              "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj": {
-                "projectPath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj"
-              }
-            }
-          }
-        },
-        "warningProperties": {
-          "warnAsError": [
-            "NU1605"
-          ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        }
-      },
-      "frameworks": {
-        "net8.0": {
-          "targetAlias": "net8.0",
-          "dependencies": {
-            "Microsoft.EntityFrameworkCore": {
-              "target": "Package",
-              "version": "[8.0.2, )"
-            },
-            "MongoDbContext": {
-              "target": "Package",
-              "version": "[4.0.6.1, )"
-            },
-            "MongoDbContext.Abstractions": {
-              "target": "Package",
-              "version": "[1.1.0, )"
-            },
-            "MongoFramework": {
-              "target": "Package",
-              "version": "[0.29.0, )"
             }
           },
           "imports": [

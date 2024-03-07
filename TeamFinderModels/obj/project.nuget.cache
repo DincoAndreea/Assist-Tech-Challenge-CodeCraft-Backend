@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "IWzpNsmxXyFi6TcWWHWN+idbcWJ5+3O4nvjn+/clfPit0zr/A+dkc1UTa7MvJR1+WfBdYB3n96GBPHTlg8kVYg==",
+  "dgSpecHash": "54ROv5p+//3TNHaZFhQOaX/Kh0UchAcON694eduw0aiWL6urJvGWsW8AP2S1r+jZJOXwKjIEI5XFJ3Eh21MgLw==",
   "success": true,
-  "projectFilePath": "E:\\Assist Tech Challenge 2024\\BackEnd\\MDB4\\MDB4\\TeamFinderModels\\TeamFinderModels.csproj",
+  "projectFilePath": "E:\\GitHub Repos\\DincoAndreeaElena\\CodeCraft_TechChallenge\\TeamFinderModels\\TeamFinderModels.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dinco\\.nuget\\packages\\awssdk.core\\3.7.100.14\\awssdk.core.3.7.100.14.nupkg.sha512",
     "C:\\Users\\dinco\\.nuget\\packages\\awssdk.securitytoken\\3.7.100.14\\awssdk.securitytoken.3.7.100.14.nupkg.sha512",
