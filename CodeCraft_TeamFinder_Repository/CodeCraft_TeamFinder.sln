@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeCraft_TeamFinder_Repository", "CodeCraft_TeamFinder_Repository.csproj", "{26E81301-F843-4B2C-86E5-9738E23C246A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCraft_TeamFinder_Models", "..\CodeCraft_TeamFinder_Models\CodeCraft_TeamFinder_Models.csproj", "{3DA9CE84-6FE1-43BB-A172-757343031453}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCraft_TeamFinder_API", "..\CodeCraft_TeamFinder_API\CodeCraft_TeamFinder_API.csproj", "{84286718-C287-407B-908C-E2E8417B0CB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCraft_TeamFinder_Services", "..\CodeCraft_TeamFinder_Services\CodeCraft_TeamFinder_Services.csproj", "{8332A27E-99F3-4DF9-8D2A-EE73E5EAD50B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{26E81301-F843-4B2C-86E5-9738E23C246A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26E81301-F843-4B2C-86E5-9738E23C246A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26E81301-F843-4B2C-86E5-9738E23C246A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26E81301-F843-4B2C-86E5-9738E23C246A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DA9CE84-6FE1-43BB-A172-757343031453}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DA9CE84-6FE1-43BB-A172-757343031453}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DA9CE84-6FE1-43BB-A172-757343031453}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DA9CE84-6FE1-43BB-A172-757343031453}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84286718-C287-407B-908C-E2E8417B0CB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84286718-C287-407B-908C-E2E8417B0CB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84286718-C287-407B-908C-E2E8417B0CB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84286718-C287-407B-908C-E2E8417B0CB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8332A27E-99F3-4DF9-8D2A-EE73E5EAD50B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8332A27E-99F3-4DF9-8D2A-EE73E5EAD50B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8332A27E-99F3-4DF9-8D2A-EE73E5EAD50B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8332A27E-99F3-4DF9-8D2A-EE73E5EAD50B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A893A8D3-5A4B-4824-8086-5A65058B15FE}
+	EndGlobalSection
+EndGlobal
