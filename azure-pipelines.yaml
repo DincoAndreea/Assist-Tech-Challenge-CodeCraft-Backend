@@ -27,6 +27,6 @@ jobs:
       azureSubscription: 'codecraft-service-connection'
       appType: 'webAppLinux'
       appName: "atc-2024-codecraft-be-linux-web-app"
-      runtimeStack: 'DOTNETCORE|8'
+      # runtimeStack: 'DOTNETCORE|8'
       package: '$(Build.ArtifactStagingDirectory)/*.zip'
       startUpCommand: 'dotnet CodeCraft_TeamFinder_API.dll'
