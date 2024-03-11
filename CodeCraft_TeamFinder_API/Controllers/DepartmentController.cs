@@ -45,6 +45,19 @@ namespace TeamFinderAPI.Controllers
             return Ok(department);
         }
 
+        [HttpGet("Organization/{id}")]
+        public async Task<ActionResult<IEnumerable<DepartmentDTO>>> GetDepartmentsByOrganization(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<DepartmentDTO> departments = await _departmentService.GetDepartmentsByOrganization(id);
+
+            return Ok(departments);
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateDepartment(Department department)
         {

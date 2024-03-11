@@ -12,10 +12,12 @@ namespace CodeCraft_TeamFinder_Services
     public class AssignmentProposalService : IAssignmentProposalService
     {
         private readonly IRepository<AssignmentProposal> _repository;
+        private readonly Lazy<IUserService> _userService;
 
-        public AssignmentProposalService(IRepository<AssignmentProposal> repository)
+        public AssignmentProposalService(IRepository<AssignmentProposal> repository, Lazy<IUserService> userService)
         {
             _repository = repository;
+            _userService = userService;
         }
 
         public async Task<AssignmentProposal> Get(string id)
@@ -26,6 +28,38 @@ namespace CodeCraft_TeamFinder_Services
         public async Task<IEnumerable<AssignmentProposal>> GetAll()
         {
             return await _repository.GetAll();
+        }
+
+        public async Task<IEnumerable<AssignmentProposal>> GetAssignmentProposalsByDepartmentManager(string id)
+        {
+            var manager = await _userService.Value.Get(id);
+
+            var assignmentProposals = await _repository.GetAll();
+
+            var assignmentProposalsByDepartmentManager = new List<AssignmentProposal>();
+
+            if (manager != null)
+            {
+                var usersByDepartment = await _userService.Value.GetUsersByDepartment(manager.DepartmentID);
+
+                foreach (var user in usersByDepartment ?? Enumerable.Empty<User>())
+                {
+                    foreach (var assignmentProposal in assignmentProposals ?? Enumerable.Empty<AssignmentProposal>())
+                    {
+                        if (assignmentProposal.UserID == user.Id)
+                        {
+                            assignmentProposalsByDepartmentManager.Add(assignmentProposal);
+                        }
+                    }
+                }
+            }
+
+            return assignmentProposalsByDepartmentManager;
+        }
+
+        public async Task<IEnumerable<AssignmentProposal>> GetAssignmentProposalsByProject(string id)
+        {
+            return await _repository.Find("ProjectID", id);
         }
 
         public async Task<IEnumerable<AssignmentProposal>> Find(string fieldName, string fieldValue)

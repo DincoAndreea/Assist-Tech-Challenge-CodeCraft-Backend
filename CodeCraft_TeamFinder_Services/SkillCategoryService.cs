@@ -28,6 +28,11 @@ namespace CodeCraft_TeamFinder_Services
             return await _repository.GetAll();
         }
 
+        public async Task<IEnumerable<SkillCategory>> GetSkillCategoryByOrganization(string id)
+        {
+            return await _repository.Find("OrganizationID", id);
+        }
+
         public async Task<IEnumerable<SkillCategory>> Find(string fieldName, string fieldValue)
         {
             return await _repository.Find(fieldName, fieldValue);

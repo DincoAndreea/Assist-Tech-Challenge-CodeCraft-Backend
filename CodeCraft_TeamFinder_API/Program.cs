@@ -32,7 +32,8 @@ namespace CodeCraft_TeamFinder_API
             builder.Services.AddScoped<ISystemRoleService, SystemRoleService>();
             builder.Services.AddScoped<ITeamRoleService, TeamRoleService>();
             builder.Services.AddScoped<IUserService, UserService>();
-            
+            builder.Services.AddTransient(typeof(Lazy<>), typeof(LazilyResolved<>));
+
 
             builder.Services.AddCors(options =>
             {

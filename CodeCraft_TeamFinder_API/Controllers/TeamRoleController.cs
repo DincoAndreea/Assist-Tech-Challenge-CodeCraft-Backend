@@ -45,6 +45,19 @@ namespace TeamFinderAPI.Controllers
             return Ok(teamRole);
         }
 
+        [HttpGet("Organization/{id}")]
+        public async Task<ActionResult<TeamRole>> GetTeamRolesByOrganization(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var teamRole = await _teamRoleService.GetTeamRolesByOrganization(id);
+
+            return Ok(teamRole);
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateTeamRole(TeamRole teamRole)
         {

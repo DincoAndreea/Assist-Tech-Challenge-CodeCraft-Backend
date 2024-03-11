@@ -11,6 +11,10 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<bool> Update(User user);
         Task<bool> Delete(string id);
         Task<IEnumerable<User>> GetUsersByOrganization(string id);
+        Task<IEnumerable<User>> GetUsersByDepartment(string id);
+        Task<IEnumerable<User>> GetUsersByProject(string id);
+        Task<IEnumerable<User>> GetUsersBySkill(string id);
+        Task<IEnumerable<TeamFinderResponseDTO>> GetPotentialTeamMembers(TeamFinderRequestDTO teamFinderRequestDTO);
         Task<LoginResponseDTO> Login(LoginRequestDTO loginRequest);
         Task<bool> RegisterAdmin(RegisterAdminRequestDTO registerAdminRequest);
         Task<bool> RegisterEmployee(RegisterEmployeeRequestDTO registerEmployeeRequest);

@@ -45,6 +45,62 @@ namespace TeamFinderAPI.Controllers
             return Ok(skill);
         }
 
+        [HttpGet("Organization/{id}")]
+        public async Task<ActionResult<IEnumerable<Skill>>> GetSkillsByorganization(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var skills = await _skillService.GetSkillsByOrganization(id);
+
+            return Ok(skills);
+        }
+
+        [HttpGet("SkillCategory/{id}")]
+        public async Task<ActionResult<IEnumerable<Skill>>> GetSkillsBySkillCategory(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var skills = await _skillService.GetSkillsBySkillCategory(id);
+
+            return Ok(skills);
+        }
+        [HttpGet("Department/{id}")]
+        public async Task<ActionResult<IEnumerable<Skill>>> GetSkillsByDepartment(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var skills = await _skillService.GetSkillsByDepartment(id);
+
+            if (skills == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(skills);
+        }
+
+        [HttpGet("User/{id}")]
+        public async Task<ActionResult<IEnumerable<Skill>>> GetSkillsByAuthor(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var skills = await _skillService.GetSkillsByAuthor(id);
+
+            return Ok(skills);
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateSkill(Skill skill)
         {

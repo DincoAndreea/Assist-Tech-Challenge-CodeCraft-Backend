@@ -26,4 +26,21 @@ namespace CodeCraft_TeamFinder_Models
         [BsonElement("DepartmentID"), BsonRepresentation(BsonType.ObjectId)]
         public string DepartmentID { get; set; }
     }
+
+    public class SkillStatisticsRequestDTO
+    {
+        public string DepartmentID { get; set; }
+        public string SkillID { get; set; }
+    }
+
+    public class SkillStatisticsResponseDTO
+    {
+        public int TotalCountOfUsers { get; set; }
+        public int CountOfUsersLevel1 { get; set; }
+        public int CountOfUserslevel2 { get; set; }
+        public int CountOfUsersLevel3 { get; set; }
+        public int CountOfUsersLevel4 { get; set; }
+        public int CountOfUsersLevel5 { get; set; }
+
+    }
 }

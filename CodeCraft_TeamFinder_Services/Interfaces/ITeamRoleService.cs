@@ -9,6 +9,7 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<IEnumerable<TeamRole>> Find(string fieldName, string fieldValue);
         Task<TeamRole> Get(string id);
         Task<IEnumerable<TeamRole>> GetAll();
+        Task<IEnumerable<TeamRole>> GetTeamRolesByOrganization(string id);
         Task<bool> Update(TeamRole teamRole);
     }
 }

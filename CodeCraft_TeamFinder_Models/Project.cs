@@ -61,4 +61,35 @@ namespace CodeCraft_TeamFinder_Models
         [BsonElement("ProjectRoles")]
         public ProjectRoles[] ProjectRoles { get; set; }
     }
+
+    public struct ProjectInformation
+    {
+        public string ProjectID { get; set; }
+        public ProjectRoles[] Roles { get; set; }
+        public string[] TechnologyStack { get; set; }
+    }
+
+    public class EmployeeProjectsDTO
+    {
+        public IEnumerable<ProjectInformation> CurrentProjects { get; set; }
+        public IEnumerable<ProjectInformation> PastProjects { get; set; }
+    }
+
+    public struct TeamMembersList
+    {
+        public IEnumerable<User> CurrentMembers { get; set; }
+        public IEnumerable<User> PastMembers { get; set; }
+    }
+
+    public class ProjectDetailsDTO : BaseClass
+    {
+        public string Name { get; set; }
+        public string Period { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? DeadlineDate { get; set; }
+        public string Status { get; set; }
+        public string Description { get; set; }
+        public string[] TechnologyStack { get; set; }
+        public TeamMembersList TeamMembers { get; set; }
+    }
 }

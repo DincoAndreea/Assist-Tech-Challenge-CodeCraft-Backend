@@ -45,6 +45,20 @@ namespace TeamFinderAPI.Controllers
             return Ok(skillCategory);
         }
 
+        [HttpGet("Organization/{id}")]
+        public async Task<ActionResult<IEnumerable<SkillCategory>>> GetSkillCategoryByOrganization(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var skillCategories = await _skillCategoryService.GetSkillCategoryByOrganization(id);
+
+            return Ok(skillCategories);
+        }
+
+
         [HttpPost]
         public async Task<ActionResult> CreateSkillCategory(SkillCategory skillCategory)
         {

@@ -9,6 +9,8 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<IEnumerable<AssignmentProposal>> Find(string fieldName, string fieldValue);
         Task<AssignmentProposal> Get(string id);
         Task<IEnumerable<AssignmentProposal>> GetAll();
+        Task<IEnumerable<AssignmentProposal>> GetAssignmentProposalsByDepartmentManager(string id);
+        Task<IEnumerable<AssignmentProposal>> GetAssignmentProposalsByProject(string id);
         Task<bool> Update(AssignmentProposal assignmentProposal);
     }
 }

@@ -9,6 +9,8 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<IEnumerable<DeallocationProposal>> Find(string fieldName, string fieldValue);
         Task<DeallocationProposal> Get(string id);
         Task<IEnumerable<DeallocationProposal>> GetAll();
+        Task<IEnumerable<DeallocationProposal>> GetDeallocationProposalsByDepartmentManager(string id);
+        Task<IEnumerable<DeallocationProposal>> GetDeallocationProposalsByProject(string id);
         Task<bool> Update(DeallocationProposal deallocationProposal);
     }
 }

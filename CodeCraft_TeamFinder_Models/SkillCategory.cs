@@ -13,5 +13,8 @@ namespace CodeCraft_TeamFinder_Models
 
         [BsonElement("Name"), BsonRepresentation(BsonType.String)]
         public string Name { get; set; }
+
+        [BsonElement("OrganizationID"), BsonRepresentation(BsonType.ObjectId)]
+        public string OrganizationID { get; set; }
     }
 }

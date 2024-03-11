@@ -9,6 +9,11 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<IEnumerable<Skill>> Find(string fieldName, string fieldValue);
         Task<Skill> Get(string id);
         Task<IEnumerable<Skill>> GetAll();
+        Task<IEnumerable<Skill>> GetSkillsByOrganization(string id);
+        Task<IEnumerable<Skill>> GetSkillsBySkillCategory(string id);
+        Task<IEnumerable<Skill>> GetSkillsByDepartment(string id);
+        Task<IEnumerable<Skill>> GetSkillsByAuthor(string id);
+        Task<SkillStatisticsResponseDTO> GetSkillStatistics(SkillStatisticsRequestDTO skillStatisticsRequest);
         Task<bool> Update(Skill skill);
     }
 }

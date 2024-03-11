@@ -33,4 +33,29 @@ namespace CodeCraft_TeamFinder_Models
         public TeamMembers[] TeamMembers { get; set; }
 
     }
+
+    public class TeamFinderRequestDTO
+    {
+        public bool PartiallyAvailable { get; set; }
+        public bool ProjectsCloseToFinish { get; set; }
+        public bool Unavailable { get; set; }
+        public bool Available { get; set; }
+        public int? Weeks { get; set; }
+        public string[] TechnologyStack { get; set; }
+        public string[] TeamRoleIDs { get; set; }
+        public string OrganizationID { get; set; }
+    }
+
+    public class TeamFinderResponseDTO
+    {
+        public User? User { get; set; }
+        public int WorkHours { get; set; }
+    }
+
+    public class ProjectTeamMembersDTO
+    {
+        public IEnumerable<User>? ProposedMembers { get; set; }
+        public IEnumerable<User>? ActiveMembers { get; set; }
+        public IEnumerable<User>? PastMembers { get; set; }
+    }
 }
