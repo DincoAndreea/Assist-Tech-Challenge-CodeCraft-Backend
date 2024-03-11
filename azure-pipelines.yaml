@@ -10,7 +10,7 @@ jobs:
     inputs:
       version: '8.x'
 
-  - script: dotnet build --configuration Release
+  - script: dotnet build CodeCraft_TeamFinder.sln --configuration Release
     workingDirectory: $(Build.SourcesDirectory)/CodeCraft_TeamFinder_Repository
     displayName: 'Build the application'
 
