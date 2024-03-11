@@ -11,6 +11,7 @@ jobs:
       version: '8.x'
 
   - script: dotnet build --configuration Release
+    workingDirectory: $(Build.SourcesDirectory)/CodeCraft_TeamFinder_Repository
     displayName: 'Build the application'
 
   - task: DotNetCoreCLI@2
