@@ -88,7 +88,7 @@ namespace TeamFinderAPI.Controllers
             return Ok(skills);
         }
 
-        [HttpGet("User/{id}")]
+        [HttpGet("Author/{id}")]
         public async Task<ActionResult<IEnumerable<Skill>>> GetSkillsByAuthor(string id)
         {
             if (!ObjectId.TryParse(id, out _))
@@ -99,6 +99,19 @@ namespace TeamFinderAPI.Controllers
             var skills = await _skillService.GetSkillsByAuthor(id);
 
             return Ok(skills);
+        }
+
+        [HttpPost("SkillStatistics")]
+        public async Task<ActionResult<SkillStatisticsResponseDTO>> GetSkillStatistics(SkillStatisticsRequestDTO skillStatisticsRequestDTO)
+        {
+            if (!ObjectId.TryParse(skillStatisticsRequestDTO.DepartmentID, out _) || !ObjectId.TryParse(skillStatisticsRequestDTO.SkillID, out _))
+            {
+                return BadRequest();
+            }
+
+            var skillStatistics = await _skillService.GetSkillStatistics(skillStatisticsRequestDTO);
+
+            return Ok(skillStatistics);
         }
 
         [HttpPost]

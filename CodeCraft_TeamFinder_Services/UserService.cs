@@ -84,7 +84,7 @@ namespace CodeCraft_TeamFinder_Services
             return await _repository.Find("SkillID", id);
         }
 
-        public async Task<IEnumerable<TeamFinderResponseDTO>> GetPotentialTeamMembers(TeamFinderRequestDTO teamFinderRequestDTO)
+        public async Task<IEnumerable<TeamFinderResponseDTO>> TeamFinder(TeamFinderRequestDTO teamFinderRequestDTO)
         {
             var users = await this.GetUsersByOrganization(teamFinderRequestDTO.OrganizationID);
 
@@ -308,6 +308,77 @@ namespace CodeCraft_TeamFinder_Services
             }
 
             return usersAvailableList;
+        }
+
+        public async Task<IEnumerable<User>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO)
+        {
+            var departmentManagersList = new List<User>();
+
+            var users = await GetUsersByOrganization(departmentManagersDTO.OrganizationID);
+
+            if (users != null)
+            {
+                var systemRole = (await _systemRoleService.Value.Find("Name", "Department Manager")).First();
+
+                if (departmentManagersDTO.Assigned)
+                {
+                    departmentManagersList = users.Where(x => x.DepartmentID != null && x.SystemRoleIDs.Contains(systemRole.Id)).ToList();
+                }
+                else
+                {
+                    departmentManagersList = users.Where(x => x.DepartmentID == null && x.SystemRoleIDs.Contains(systemRole.Id)).ToList();
+                }
+            }
+
+            return departmentManagersList;
+        }
+
+        public async Task<IEnumerable<User>> GetProjectManagers(string id)
+        {
+            var projectManagersList = new List<User>();
+
+            var users = await GetUsersByOrganization(id);
+
+            if (users != null)
+            {
+                var systemRole = (await _systemRoleService.Value.Find("Name", "Project Manager")).First();
+
+                projectManagersList = users.Where(x => x.SystemRoleIDs.Contains(systemRole.Id)).ToList();
+            }
+
+            return projectManagersList;
+        }
+
+        public async Task<IEnumerable<User>> GetEmployees(string id)
+        {
+            var employeesList = new List<User>();
+
+            var users = await GetUsersByOrganization(id);
+
+            if (users != null)
+            {
+                var systemRole = (await _systemRoleService.Value.Find("Name", "Employee")).First();
+
+                employeesList = users.Where(x => x.SystemRoleIDs.Contains(systemRole.Id) && x.SystemRoleIDs.Count() == 1).ToList();
+            }
+
+            return employeesList;
+        }
+
+        public async Task<IEnumerable<User>> GetOrganizationAdmins(string id)
+        {
+            var organizationAdminsList = new List<User>();
+
+            var users = await GetUsersByOrganization(id);
+
+            if (users != null)
+            {
+                var systemRole = (await _systemRoleService.Value.Find("Name", "Organization Administrator")).First();
+
+                organizationAdminsList = users.Where(x => x.SystemRoleIDs.Contains(systemRole.Id)).ToList();
+            }
+
+            return organizationAdminsList;
         }
 
         public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequest)

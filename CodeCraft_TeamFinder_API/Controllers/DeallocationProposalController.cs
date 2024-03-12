@@ -45,6 +45,32 @@ namespace TeamFinderAPI.Controllers
             return Ok(deallocationProposal);
         }
 
+        [HttpGet("DepartmentManager/{id}")]
+        public async Task<ActionResult<IEnumerable<DeallocationProposal>>> GetDeallocationProposalsByDepartmentManager(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var deallocationProposals = await _deallocationProposalService.GetDeallocationProposalsByDepartmentManager(id);
+
+            return Ok(deallocationProposals);
+        }
+
+        [HttpGet("Project/{id}")]
+        public async Task<ActionResult<IEnumerable<DeallocationProposal>>> GetDeallocationProposalsByProject(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var deallocationProposals = await _deallocationProposalService.GetDeallocationProposalsByProject(id);
+
+            return Ok(deallocationProposals);
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateDeallocationProposal(DeallocationProposal deallocationProposal)
         {

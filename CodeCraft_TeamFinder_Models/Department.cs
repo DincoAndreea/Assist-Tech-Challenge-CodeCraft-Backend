@@ -40,4 +40,10 @@ namespace CodeCraft_TeamFinder_Models
         public string DepartmentID { get; set; }
         public string UserID { get; set; }
     }
+
+    public class  DepartmentManagersDTO
+    {
+        public string OrganizationID { get; set; }
+        public bool Assigned { get; set; }
+    }
 }

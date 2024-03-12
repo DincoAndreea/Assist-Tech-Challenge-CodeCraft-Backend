@@ -85,7 +85,7 @@ namespace TeamFinderAPI.Controllers
         }
 
         [HttpGet("Organization/{id}")]
-        public async Task<ActionResult<User>> GetUsersByOrganization(string id)
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersByOrganization(string id)
         {
             if (!ObjectId.TryParse(id, out _))
             {
@@ -98,6 +98,110 @@ namespace TeamFinderAPI.Controllers
             {
                 return NotFound();
             }
+
+            return Ok(users);
+        }
+
+        [HttpGet("Department/{id}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersByDepartment(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<User> users = await _userService.GetUsersByDepartment(id);
+
+            return Ok(users);
+        }
+
+        [HttpGet("Project/{id}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersByProject(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<User> users = await _userService.GetUsersByProject(id);
+
+            return Ok(users);
+        }
+
+        [HttpGet("Skill/{id}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersBySkill(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<User> users = await _userService.GetUsersBySkill(id);
+
+            return Ok(users);
+        }
+
+        [HttpPost("TeamFinder")]
+        public async Task<ActionResult<IEnumerable<TeamFinderResponseDTO>>> TeamFinder(TeamFinderRequestDTO teamFinderRequestDTO)
+        {
+            if (!ObjectId.TryParse(teamFinderRequestDTO.OrganizationID, out _))
+            {
+                return BadRequest();
+            }
+
+            var users = await _userService.TeamFinder(teamFinderRequestDTO);
+
+            return Ok(users);
+        }
+
+        [HttpGet("OrganizationAdmins")]
+        public async Task<ActionResult<IEnumerable<User>>> GetOrganizationAdmins(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<User> users = await _userService.GetOrganizationAdmins(id);
+
+            return Ok(users);
+        }
+
+        [HttpPost("DepartmentManagers")]
+        public async Task<ActionResult<IEnumerable<User>>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO)
+        {
+            if (!ObjectId.TryParse(departmentManagersDTO.OrganizationID, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<User> users = await _userService.GetDepartmentManagers(departmentManagersDTO);
+
+            return Ok(users);
+        }
+
+        [HttpGet("ProjectManagers")]
+        public async Task<ActionResult<IEnumerable<User>>> GetProjectManagers(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<User> users = await _userService.GetProjectManagers(id);
+
+            return Ok(users);
+        }
+
+        [HttpGet("Employees")]
+        public async Task<ActionResult<IEnumerable<User>>> GetEmployees(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<User> users = await _userService.GetEmployees(id);
 
             return Ok(users);
         }

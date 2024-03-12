@@ -43,4 +43,12 @@ namespace CodeCraft_TeamFinder_Models
         public int CountOfUsersLevel5 { get; set; }
 
     }
+
+    public class SkillEndorsementDTO
+    {
+        public string UserID { get; set; }
+        public string TrainingTitle { get; set; }
+        public string TrainingDescription { get; set; }
+        public string[]? ProjectIDs { get; set; }
+    }
 }

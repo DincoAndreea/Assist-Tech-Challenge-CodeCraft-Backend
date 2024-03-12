@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using System.Data;
 using CodeCraft_TeamFinder_Services.Interfaces;
 using MongoDB.Bson;
+using CodeCraft_TeamFinder_Services;
 
 namespace TeamFinderAPI.Controllers
 {
@@ -41,6 +42,58 @@ namespace TeamFinderAPI.Controllers
             {
                 return NotFound();
             }
+
+            return Ok(project);
+        }
+
+        [HttpGet("Organization/{id}")]
+        public async Task<ActionResult<IEnumerable<Project>>> GetProjectsByOrganization(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var projects = await _projectService.GetProjectsByOrganization(id);
+
+            return Ok(projects);
+        }
+
+        [HttpGet("EmployeeProjects")]
+        public async Task<ActionResult<EmployeeProjectsDTO>> GetEmployeeProjects(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var projects = await _projectService.GetEmployeeProjects(id);
+
+            return Ok(projects);
+        }
+
+        [HttpGet("DepartmentProjects")]
+        public async Task<ActionResult<IEnumerable<DepartmentProjectDTO>>> GetDepartmentProjects(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var projects = await _projectService.GetDepartmentProjects(id);
+
+            return Ok(projects);
+        }
+
+        [HttpGet("ProjectDetails")]
+        public async Task<ActionResult<ProjectDetailsDTO>> GetProjectDetails(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var project = await _projectService.GetProjectDetails(id);
 
             return Ok(project);
         }

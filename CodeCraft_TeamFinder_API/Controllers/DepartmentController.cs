@@ -58,6 +58,42 @@ namespace TeamFinderAPI.Controllers
             return Ok(departments);
         }
 
+        [HttpPost("AssignDepartmentManager")]
+        public async Task<ActionResult> AssignDepartmentManager(AssignDepartmentManagerDTO assignDepartmentManagerDTO)
+        {
+            if (!ObjectId.TryParse(assignDepartmentManagerDTO.ManagerID, out _) || !ObjectId.TryParse(assignDepartmentManagerDTO.DepartmentID, out _))
+            {
+                return BadRequest();
+            }
+
+            bool success = await _departmentService.AssignDepartmentManager(assignDepartmentManagerDTO);
+
+            if (!success)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("AddDepartmentMember")]
+        public async Task<ActionResult> AddDepartmentMember(AddDepartmentMemberDTO addDepartmentMemberDTO)
+        {
+            if (!ObjectId.TryParse(addDepartmentMemberDTO.DepartmentID, out _) || !ObjectId.TryParse(addDepartmentMemberDTO.UserID, out _))
+            {
+                return BadRequest();
+            }
+
+            bool success = await _departmentService.AddDepartmentMember(addDepartmentMemberDTO);
+
+            if (!success)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateDepartment(Department department)
         {

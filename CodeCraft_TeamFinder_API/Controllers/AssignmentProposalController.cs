@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using CodeCraft_TeamFinder_Services.Interfaces;
 using MongoDB.Bson;
+using CodeCraft_TeamFinder_Services;
 
 namespace TeamFinderAPI.Controllers
 {
@@ -43,6 +44,32 @@ namespace TeamFinderAPI.Controllers
             }
 
             return Ok(assignmentProposal);
+        }
+
+        [HttpGet("DepartmentManager/{id}")]
+        public async Task<ActionResult<IEnumerable<AssignmentProposal>>> GetAssignmentProposalsByDepartmentManager(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var assignmentProposals = await _assignmentProposalService.GetAssignmentProposalsByDepartmentManager(id);
+
+            return Ok(assignmentProposals);
+        }
+
+        [HttpGet("Project/{id}")]
+        public async Task<ActionResult<IEnumerable<AssignmentProposal>>> GetAssignmentProposalsByProject(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var assignmentProposals = await _assignmentProposalService.GetAssignmentProposalsByProject(id);
+
+            return Ok(assignmentProposals);
         }
 
         [HttpPost]

@@ -65,7 +65,8 @@ namespace CodeCraft_TeamFinder_Models
     public struct ProjectInformation
     {
         public string ProjectID { get; set; }
-        public ProjectRoles[] Roles { get; set; }
+        public string ProjectName { get; set; }
+        public string[] Roles { get; set; }
         public string[] TechnologyStack { get; set; }
     }
 
@@ -91,5 +92,13 @@ namespace CodeCraft_TeamFinder_Models
         public string Description { get; set; }
         public string[] TechnologyStack { get; set; }
         public TeamMembersList TeamMembers { get; set; }
+    }
+
+    public class DepartmentProjectDTO
+    {
+        public string Name { get; set; }
+        public DateTime? DeadlineDate { get; set; }
+        public string Status { get; set; }
+        public ProjectTeamMembersDTO TeamMembers { get; set; }
     }
 }
