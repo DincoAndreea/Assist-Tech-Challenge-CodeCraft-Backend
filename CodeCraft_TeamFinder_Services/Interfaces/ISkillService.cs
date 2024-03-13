@@ -14,6 +14,8 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<IEnumerable<Skill>> GetSkillsByDepartment(string id);
         Task<IEnumerable<Skill>> GetSkillsByAuthor(string id);
         Task<SkillStatisticsResponseDTO> GetSkillStatistics(SkillStatisticsRequestDTO skillStatisticsRequest);
+        Task<IEnumerable<SkillValidationDTO>> GetSkillValidationProposals();
+        Task<bool> AcceptSkillValidation(SkillValidationStatusDTO skillValidationStatusDTO);
         Task<bool> Update(Skill skill);
     }
 }

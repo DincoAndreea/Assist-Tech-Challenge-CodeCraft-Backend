@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using System.Data;
 using CodeCraft_TeamFinder_Services.Interfaces;
 using MongoDB.Bson;
+using CodeCraft_TeamFinder_Services;
 
 namespace TeamFinderAPI.Controllers
 {
@@ -69,6 +70,24 @@ namespace TeamFinderAPI.Controllers
             var deallocationProposals = await _deallocationProposalService.GetDeallocationProposalsByProject(id);
 
             return Ok(deallocationProposals);
+        }
+
+        [HttpPost("AcceptDeallocationProposal")]
+        public async Task<ActionResult> AcceptDeallocationProposal(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var success = await _deallocationProposalService.AcceptDealllocationProposal(id);
+
+            if (!success)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
 
         [HttpPost]

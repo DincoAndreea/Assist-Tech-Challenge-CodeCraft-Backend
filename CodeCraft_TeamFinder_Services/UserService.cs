@@ -5,6 +5,8 @@ using CodeCraft_TeamFinder_Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,13 +20,9 @@ namespace CodeCraft_TeamFinder_Services
         private readonly Lazy<IProjectTeamService> _projectTeamService;
         private readonly Lazy<IProjectService> _projectService;
         private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<IDepartmentService> _departmentService;
 
-        public UserService(IRepository<User> repository,
-                           Lazy<IOrganizationService> organizationService,
-                           Lazy<ISystemRoleService> systemRoleService,
-                           Lazy<IProjectTeamService> projectTeamService,
-                           Lazy<IProjectService> projectService,
-                           Lazy<ISkillService> skillService)
+        public UserService(IRepository<User> repository, Lazy<IOrganizationService> organizationService, Lazy<ISystemRoleService> systemRoleService, Lazy<IProjectTeamService> projectTeamService, Lazy<IProjectService> projectService, Lazy<ISkillService> skillService, Lazy<IDepartmentService> departmentService)
         {
             _repository = repository;
             _organizationService = organizationService;
@@ -32,6 +30,7 @@ namespace CodeCraft_TeamFinder_Services
             _projectTeamService = projectTeamService;
             _projectService = projectService;
             _skillService = skillService;
+            _departmentService = departmentService;
         }
 
         public async Task<User> Get(string id)
@@ -46,7 +45,42 @@ namespace CodeCraft_TeamFinder_Services
 
         public async Task<bool> Create(User user)
         {
-            return await _repository.Create(user);
+            bool success = await _repository.Create(user);
+
+            if (user.DepartmentID != null && success)
+            {
+                var department = await _departmentService.Value.Get(user.DepartmentID);
+
+                if (department.ManagerID != null)
+                {
+                    var manager = await _repository.Get(department.ManagerID);
+
+                    if (user.Skills != null && user.Skills.Count() > 0)
+                    {
+                        foreach (var skill in user.Skills)
+                        {
+                            string fromAddress = "dincoandreea@gmail.com";
+                            string toAddress = "dincoandreea@gmail.com";
+                            string subject = "Skill Validation";
+                            string body = $"{user.Name} added a skill to their profile that need your approval. Check the request in the app.";
+
+                            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                            {
+                                Port = 587,
+                                Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
+                                EnableSsl = true,
+                            };
+
+                            using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
+                            {
+                                smtpClient.Send(mailMessage);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return success;
         }
 
         public async Task<IEnumerable<User>> Find(string fieldName, string fieldValue)
@@ -56,7 +90,44 @@ namespace CodeCraft_TeamFinder_Services
 
         public async Task<bool> Update(User user)
         {
-            return await _repository.Update(user);
+            bool success = await _repository.Update(user);
+
+            if (user.DepartmentID != null && success)
+            {
+                var department = await _departmentService.Value.Get(user.DepartmentID);
+
+                if (department.ManagerID != null)
+                {
+                    var manager = await _repository.Get(department.ManagerID);
+
+                    if (user.Skills != null && user.Skills.Count() > 0)
+                    {
+                        var skillsPending = user.Skills.Where(x => x.Status == "Pending").ToList();
+
+                        foreach (var skills in skillsPending)
+                        {
+                            string fromAddress = "dincoandreea@gmail.com";
+                            string toAddress = "dincoandreea@gmail.com";
+                            string subject = "Skill Validation";
+                            string body = $"{user.Name} added a skill to their profile that need your approval. Check the request in the app.";
+
+                            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                            {
+                                Port = 587,
+                                Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
+                                EnableSsl = true,
+                            };
+
+                            using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
+                            {
+                                smtpClient.Send(mailMessage);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return success;
         }
 
         public async Task<bool> Delete(string id)
@@ -407,7 +478,8 @@ namespace CodeCraft_TeamFinder_Services
 
             if (organizationCreated)
             {
-                User user = new User { Name = registerAdminRequest.Name, Email = registerAdminRequest.Email, Password = registerAdminRequest.Password, OrganizationID = organization.Id, SystemRoleIDs = new string[] { systemRole.Id } };
+                User user = new User { Name = registerAdminRequest.Name, Email = registerAdminRequest.Email, Password = registerAdminRequest.Password, OrganizationID = organization.Id, SystemRoleIDs = new List<string> { systemRole.Id } };
+
                 bool adminCreated = await _repository.Create(user);
 
                 return adminCreated;
@@ -420,7 +492,8 @@ namespace CodeCraft_TeamFinder_Services
         {
             var systemRole = (await _systemRoleService.Value.Find("Name", "Employee")).First();
 
-            User user = new User { Name = registerEmployeeRequest.Name, Email = registerEmployeeRequest.Email, Password = registerEmployeeRequest.Password, OrganizationID = registerEmployeeRequest.OrganizationID, SystemRoleIDs = new string[] { systemRole.Id } };
+            User user = new User { Name = registerEmployeeRequest.Name, Email = registerEmployeeRequest.Email, Password = registerEmployeeRequest.Password, OrganizationID = registerEmployeeRequest.OrganizationID, SystemRoleIDs = new List<string> { systemRole.Id } };
+
             bool employeeCreated = await _repository.Create(user);
 
             return employeeCreated;

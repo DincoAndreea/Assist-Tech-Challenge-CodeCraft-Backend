@@ -66,7 +66,7 @@ namespace CodeCraft_TeamFinder_Services
                         teamRolesList.Add(teamRole.Name);
                     }
 
-                    ProjectInformation currentProjectInformation = new ProjectInformation { ProjectID = projectID, ProjectName = project.Name, TechnologyStack = project.TechnologyStack, Roles = teamRolesList.ToArray() };
+                    ProjectInformation currentProjectInformation = new ProjectInformation { ProjectID = projectID, ProjectName = project.Name, TechnologyStack = project.TechnologyStack, Roles = teamRolesList };
 
                     if (teamMember.Active)
                     {

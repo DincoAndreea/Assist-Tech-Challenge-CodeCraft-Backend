@@ -23,8 +23,8 @@ namespace CodeCraft_TeamFinder_Models
         [BsonElement("AuthorID"), BsonRepresentation(BsonType.ObjectId)]
         public string AuthorID { get; set; }
 
-        [BsonElement("DepartmentID"), BsonRepresentation(BsonType.ObjectId)]
-        public string DepartmentID { get; set; }
+        [BsonElement("DepartmentIDs"), BsonRepresentation(BsonType.ObjectId)]
+        public List<string>? DepartmentIDs { get; set; }
     }
 
     public class SkillStatisticsRequestDTO
@@ -44,11 +44,19 @@ namespace CodeCraft_TeamFinder_Models
 
     }
 
-    public class SkillEndorsementDTO
+    public class SkillValidationDTO
     {
-        public string UserID { get; set; }
-        public string TrainingTitle { get; set; }
-        public string TrainingDescription { get; set; }
-        public string[]? ProjectIDs { get; set; }
+        public string EmployeeName { get; set; }
+        public string SkillID { get; set; }
+        public string Skill { get; set; }
+        public string Level { get; set; }
+        public string Experience { get; set; }
+    }
+
+    public class SkillValidationStatusDTO 
+    {
+        public string EmployeeID { get; set; }
+        public string SkillID { get; set; }
+        public string Status { get; set; }
     }
 }

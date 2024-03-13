@@ -72,6 +72,24 @@ namespace TeamFinderAPI.Controllers
             return Ok(assignmentProposals);
         }
 
+        [HttpPost("AcceptAssignmentProposal")]
+        public async Task<ActionResult> AcceptAssignmentProposal(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var success = await _assignmentProposalService.AcceptAssignmentProposal(id);
+
+            if (!success)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateAssignmentProposal(AssignmentProposal assignmentProposal)
         {

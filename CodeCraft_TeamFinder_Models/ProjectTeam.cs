@@ -14,7 +14,7 @@ namespace CodeCraft_TeamFinder_Models
         public string UserID { get; set; }
 
         [BsonElement("TeamRoleIDs"), BsonRepresentation(BsonType.ObjectId)]
-        public string[] TeamRoleIDs { get; set; }
+        public List<string> TeamRoleIDs { get; set; }
 
         [BsonElement("Active"), BsonRepresentation(BsonType.Boolean)]
         public bool Active { get; set; }
@@ -30,7 +30,7 @@ namespace CodeCraft_TeamFinder_Models
         public string ProjectID { get; set; }
 
         [BsonElement("TeamMembers")]
-        public TeamMembers[] TeamMembers { get; set; }
+        public List<TeamMembers>? TeamMembers { get; set; }
 
     }
 
@@ -41,8 +41,8 @@ namespace CodeCraft_TeamFinder_Models
         public bool Unavailable { get; set; }
         public bool Available { get; set; }
         public int? Weeks { get; set; }
-        public string[] TechnologyStack { get; set; }
-        public string[] TeamRoleIDs { get; set; }
+        public List<string> TechnologyStack { get; set; }
+        public List<string> TeamRoleIDs { get; set; }
         public string OrganizationID { get; set; }
     }
 
@@ -54,8 +54,8 @@ namespace CodeCraft_TeamFinder_Models
 
     public class ProjectTeamMembersDTO
     {
-        public IEnumerable<User>? ProposedMembers { get; set; }
-        public IEnumerable<User>? ActiveMembers { get; set; }
-        public IEnumerable<User>? PastMembers { get; set; }
+        public List<User>? ProposedMembers { get; set; }
+        public List<User>? ActiveMembers { get; set; }
+        public List<User>? PastMembers { get; set; }
     }
 }

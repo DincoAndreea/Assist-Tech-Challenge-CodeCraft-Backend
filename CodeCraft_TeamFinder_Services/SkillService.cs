@@ -94,6 +94,67 @@ namespace CodeCraft_TeamFinder_Services
             return skillStatisticsResponseDTO;
         }
 
+        public async Task<IEnumerable<SkillValidationDTO>> GetSkillValidationProposals()
+        {
+            var allUsers = await _userService.Value.GetAll();
+
+            List<SkillValidationDTO> skillValidationDTOs = new List<SkillValidationDTO>();
+
+            var usersForSkillValidation = allUsers.Where(x => x.Skills != null && x.Skills.Where(y => y.Status == "Pending").Count() > 0).ToList();
+
+            foreach (var user in usersForSkillValidation)
+            {
+                var skills = user.Skills;
+
+                foreach (var skill in skills ?? Enumerable.Empty<Skills>())
+                {
+                    var skillDetails = await _repository.Get(skill.SkillID);
+
+                    SkillValidationDTO skillValidationDTO = new SkillValidationDTO { EmployeeName = user.Name, Experience = skill.Experience, Level = skill.Level, Skill = skillDetails.Name, SkillID = skill.SkillID };
+
+                    skillValidationDTOs.Add(skillValidationDTO);
+                }
+            }
+
+            return skillValidationDTOs;
+        }
+
+        public async Task<bool> AcceptSkillValidation(SkillValidationStatusDTO skillValidationStatusDTO)
+        {
+            var user = await _userService.Value.Get(skillValidationStatusDTO.EmployeeID);
+
+            var userSkills = user.Skills;
+
+            if (userSkills != null)
+            {
+                var skill = userSkills.Where(x => x.SkillID ==  skillValidationStatusDTO.SkillID).FirstOrDefault();
+
+                if (skillValidationStatusDTO.Status == "Accepted")
+                {
+                    user.Skills.Remove(skill);
+
+                    skill.Status = skillValidationStatusDTO.Status;
+
+                    user.Skills.Add(skill);
+
+                    bool success = await _userService.Value.Update(user);
+
+                    return success;
+                }
+
+                if (skillValidationStatusDTO.Status == "Rejected")
+                {
+                    user.Skills.Remove(skill);
+
+                    bool success = await _userService.Value.Update(user);
+
+                    return success;
+                }
+            }
+
+            return false;
+        }
+
         public async Task<IEnumerable<Skill>> Find(string fieldName, string fieldValue)
         {
             return await _repository.Find(fieldName, fieldValue);
