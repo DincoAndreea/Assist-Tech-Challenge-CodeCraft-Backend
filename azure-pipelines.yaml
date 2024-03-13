@@ -1,0 +1,32 @@
+pool: 'default'
+
+jobs:
+- job: BuildAndDeploy
+  displayName: 'Build and Deploy'
+
+  steps:
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core SDK'
+    inputs:
+      version: '8.x'
+
+  - script: dotnet build CodeCraft_TeamFinder.sln --configuration Release
+    workingDirectory: $(Build.SourcesDirectory)/CodeCraft_TeamFinder_Repository
+    displayName: 'Build the application'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Publish the application'
+    inputs:
+      command: 'publish'
+      publishWebProjects: true
+      arguments: '--configuration Release --output $(Build.ArtifactStagingDirectory)'
+
+  - task: AzureWebApp@1
+    displayName: 'Deploy Azure Web App'
+    inputs:
+      azureSubscription: 'codecraft-service-connection'
+      appType: 'webAppLinux'
+      appName: "atc-2024-codecraft-be-linux-web-app"
+      # runtimeStack: 'DOTNETCORE|8'
+      package: '$(Build.ArtifactStagingDirectory)/*.zip'
+      startUpCommand: 'dotnet CodeCraft_TeamFinder_API.dll'
