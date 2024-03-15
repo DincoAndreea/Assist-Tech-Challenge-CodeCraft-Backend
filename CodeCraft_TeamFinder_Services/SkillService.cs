@@ -38,7 +38,7 @@ namespace CodeCraft_TeamFinder_Services
 
             if (allSkillCategories != null)
             {
-                var skillCategoriesByOrganization = allSkillCategories.Where(x => x.OrganizationID == id);
+                var skillCategoriesByOrganization = allSkillCategories.Where(x => x.OrganizationID == id).ToList();
 
                 var skills = new List<Skill>();
 
@@ -46,10 +46,10 @@ namespace CodeCraft_TeamFinder_Services
                 {
                     var skillsByCategory = await this.GetSkillsBySkillCategory(skillCategory.Id);
 
-                    skills.AddRange(skillsByCategory);
-
-                    return skills;
+                    skills.AddRange(skillsByCategory);                    
                 }
+
+                return skills;
             }
 
             return Enumerable.Empty<Skill>();
