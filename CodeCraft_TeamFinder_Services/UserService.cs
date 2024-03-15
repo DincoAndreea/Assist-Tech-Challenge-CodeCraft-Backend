@@ -35,7 +35,7 @@ namespace CodeCraft_TeamFinder_Services
 
         public async Task<User> Get(string id)
         {
-            return await _repository.Get(id);
+            return await _repository.Get(id);            
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -431,6 +431,22 @@ namespace CodeCraft_TeamFinder_Services
                 var systemRole = (await _systemRoleService.Value.Find("Name", "Employee")).First();
 
                 employeesList = users.Where(x => x.SystemRoleIDs.Contains(systemRole.Id) && x.SystemRoleIDs.Count() == 1).ToList();
+            }
+
+            return employeesList;
+        }
+
+        public async Task<IEnumerable<User>> GetEmployeesWithoutDepartment(string id)
+        {
+            var employeesList = new List<User>();
+
+            var users = await GetUsersByOrganization(id);
+
+            if (users != null)
+            {
+                var systemRole = (await _systemRoleService.Value.Find("Name", "Employee")).First();
+
+                employeesList = users.Where(x => x.SystemRoleIDs.Contains(systemRole.Id) && x.SystemRoleIDs.Count() == 1 && x.DepartmentID == null).ToList();
             }
 
             return employeesList;

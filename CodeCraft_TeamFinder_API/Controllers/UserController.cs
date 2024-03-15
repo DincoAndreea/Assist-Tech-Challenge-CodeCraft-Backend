@@ -35,7 +35,7 @@ namespace TeamFinderAPI.Controllers
                 return BadRequest();
             }
 
-            User user = await _userService.Get(id);
+            var user = await _userService.Get(id);
 
             if (user == null)
             {
@@ -202,6 +202,19 @@ namespace TeamFinderAPI.Controllers
             }
 
             IEnumerable<User> users = await _userService.GetEmployees(id);
+
+            return Ok(users);
+        }
+
+        [HttpGet("EmployeesWithoutDepartment")]
+        public async Task<ActionResult<IEnumerable<User>>> GetEmployeesWithoutDepartment(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            IEnumerable<User> users = await _userService.GetEmployeesWithoutDepartment(id);
 
             return Ok(users);
         }

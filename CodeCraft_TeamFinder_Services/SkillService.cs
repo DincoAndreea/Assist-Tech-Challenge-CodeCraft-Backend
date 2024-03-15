@@ -85,7 +85,7 @@ namespace CodeCraft_TeamFinder_Services
             {
                 TotalCountOfUsers = usersBySkill.Count,
                 CountOfUsersLevel1 = usersBySkillLevel1.Count,
-                CountOfUserslevel2 = usersBySkilllevel2.Count,
+                CountOfUsersLevel2 = usersBySkilllevel2.Count,
                 CountOfUsersLevel3 = usersBySkilllevel3.Count,
                 CountOfUsersLevel4 = usersBySkillLevel4.Count,
                 CountOfUsersLevel5 = usersBySkillLevel5.Count
