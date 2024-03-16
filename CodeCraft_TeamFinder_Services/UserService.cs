@@ -9,6 +9,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection.Emit;
 
 namespace CodeCraft_TeamFinder_Services
 {
@@ -35,7 +36,7 @@ namespace CodeCraft_TeamFinder_Services
 
         public async Task<User> Get(string id)
         {
-            return await _repository.Get(id);            
+            return await _repository.Get(id);
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -163,11 +164,13 @@ namespace CodeCraft_TeamFinder_Services
 
             if (teamFinderRequestDTO.PartiallyAvailable)
             {
-                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0);
+                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0).ToList();
 
                 int matchSkills = 0;
 
                 int matchTeamRolesAndTechnologyOnPastProject = 0;
+
+                var matchSkillRequirements = 0;
 
                 foreach (var user in usersWorkingOnProjects ?? Enumerable.Empty<User>())
                 {
@@ -177,23 +180,28 @@ namespace CodeCraft_TeamFinder_Services
 
                     var skills = user.Skills;
 
-                    if (teamFinderRequestDTO.PastExperience)
+                    foreach (var skill in skills ?? Enumerable.Empty<Skills>())
                     {
-                        foreach (var skill in skills ?? Enumerable.Empty<Skills>())
+                        var skillID = skill.SkillID;
+
+                        var skillObject = await _skillService.Value.Get(skillID);
+
+                        var level = skill.Level == "Learns" ? 1 : skill.Level == "Knows" ? 2 : skill.Level == "Does" ? 3 : skill.Level == "Helps" ? 4 : 5;
+
+                        if (skillObject != null)
                         {
-                            var skillID = skill.SkillID;
-
-                            var skillObject = await _skillService.Value.Get(skillID);
-
-                            if (skillObject != null)
+                            if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
                             {
-                                if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
-                                {
-                                    matchSkills++;
-                                }
+                                matchSkills++;
+                            }
+
+                            if (teamFinderRequestDTO.SkillRequirements != null)
+                            {
+                                matchSkillRequirements += teamFinderRequestDTO.SkillRequirements.Where(x => x.SkillID == skillObject.Id
+                                                          && (x.MinimumLevel == "Learns" ? 1 : x.MinimumLevel == "Knows" ? 2 : x.MinimumLevel == "Does" ? 3 : x.MinimumLevel == "Helps" ? 4 : 5) <= level).ToList().Count();
                             }
                         }
-                    }                    
+                    }
 
                     foreach (var projectID in projectIDs ?? Enumerable.Empty<string>())
                     {
@@ -217,22 +225,21 @@ namespace CodeCraft_TeamFinder_Services
                                     workHours += teamMember.WorkHours;
                                 }
                             }
-                            
                         }
                     }
 
-                    if (workHours < 8 && matchSkills > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    if (workHours < 8 && (matchSkills > 0 || matchSkillRequirements > 0) && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersPartiallyAvailableList.Add(member);
                     }
 
-                    if ((workHours < 8 && matchSkills > 0 && !teamFinderRequestDTO.PastExperience) || (workHours < 8 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    if ((workHours < 8 && (matchSkills > 0 || matchSkillRequirements > 0) && !teamFinderRequestDTO.PastExperience) || (workHours < 8 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersPartiallyAvailableList.Add(member);
                     }
-                }                
+                }
             }
 
             return usersPartiallyAvailableList;
@@ -246,13 +253,15 @@ namespace CodeCraft_TeamFinder_Services
 
             if (teamFinderRequestDTO.ProjectsCloseToFinish)
             {
-                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0);
+                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0).ToList();
 
                 int matchSkills = 0;
 
                 int matchTeamRolesAndTechnologyOnPastProject = 0;
 
                 int projectsCloseToFinish = 0;
+
+                var matchSkillRequirements = 0;
 
                 foreach (var user in usersWorkingOnProjects ?? Enumerable.Empty<User>())
                 {
@@ -262,20 +271,25 @@ namespace CodeCraft_TeamFinder_Services
 
                     var skills = user.Skills;
 
-                    if (teamFinderRequestDTO.PastExperience)
+                    foreach (var skill in skills ?? Enumerable.Empty<Skills>())
                     {
-                        foreach (var skill in skills ?? Enumerable.Empty<Skills>())
+                        var skillID = skill.SkillID;
+
+                        var skillObject = await _skillService.Value.Get(skillID);
+
+                        var level = skill.Level == "Learns" ? 1 : skill.Level == "Knows" ? 2 : skill.Level == "Does" ? 3 : skill.Level == "Helps" ? 4 : 5;
+
+                        if (skillObject != null)
                         {
-                            var skillID = skill.SkillID;
-
-                            var skillObject = await _skillService.Value.Get(skillID);
-
-                            if (skillObject != null)
+                            if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
                             {
-                                if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
-                                {
-                                    matchSkills++;
-                                }
+                                matchSkills++;
+                            }
+
+                            if (teamFinderRequestDTO.SkillRequirements != null)
+                            {
+                                matchSkillRequirements += teamFinderRequestDTO.SkillRequirements.Where(x => x.SkillID == skillObject.Id
+                                                          && (x.MinimumLevel == "Learns" ? 1 : x.MinimumLevel == "Knows" ? 2 : x.MinimumLevel == "Does" ? 3 : x.MinimumLevel == "Helps" ? 4 : 5) <= level).ToList().Count();
                             }
                         }
                     }
@@ -312,23 +326,20 @@ namespace CodeCraft_TeamFinder_Services
                                     projectsCloseToFinish++;
                                 }
                             }
-
                         }
                     }
 
-                    if (projectsCloseToFinish > 0 && matchSkills > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    if (projectsCloseToFinish > 0 && (matchSkills > 0 || matchSkillRequirements > 0) && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersOnProjectsCloseToFinishList.Add(member);
                     }
 
-                    if ((projectsCloseToFinish > 0 && matchSkills > 0 && !teamFinderRequestDTO.PastExperience) || (projectsCloseToFinish > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    if ((projectsCloseToFinish > 0 && (matchSkills > 0 || matchSkillRequirements > 0) && !teamFinderRequestDTO.PastExperience) || (projectsCloseToFinish > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersOnProjectsCloseToFinishList.Add(member);
                     }
-
-                    
                 }
             }
 
@@ -343,11 +354,13 @@ namespace CodeCraft_TeamFinder_Services
 
             if (teamFinderRequestDTO.Unavailable)
             {
-                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0);
+                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0).ToList();
 
                 int matchSkills = 0;
 
                 int matchTeamRolesAndTechnologyOnPastProject = 0;
+
+                var matchSkillRequirements = 0;
 
                 foreach (var user in usersWorkingOnProjects ?? Enumerable.Empty<User>())
                 {
@@ -357,23 +370,29 @@ namespace CodeCraft_TeamFinder_Services
 
                     var skills = user.Skills;
 
-                    if (teamFinderRequestDTO.PastExperience)
+                    foreach (var skill in skills ?? Enumerable.Empty<Skills>())
                     {
-                        foreach (var skill in skills ?? Enumerable.Empty<Skills>())
+                        var skillID = skill.SkillID;
+
+                        var skillObject = await _skillService.Value.Get(skillID);
+
+                        var level = skill.Level == "Learns" ? 1 : skill.Level == "Knows" ? 2 : skill.Level == "Does" ? 3 : skill.Level == "Helps" ? 4 : 5;
+
+                        if (skillObject != null)
                         {
-                            var skillID = skill.SkillID;
-
-                            var skillObject = await _skillService.Value.Get(skillID);
-
-                            if (skillObject != null)
+                            if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
                             {
-                                if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
-                                {
-                                    matchSkills++;
-                                }
+                                matchSkills++;
+                            }
+
+                            if (teamFinderRequestDTO.SkillRequirements != null)
+                            {
+                                matchSkillRequirements += teamFinderRequestDTO.SkillRequirements.Where(x => x.SkillID == skillObject.Id
+                                                          && (x.MinimumLevel == "Learns" ? 1 : x.MinimumLevel == "Knows" ? 2 : x.MinimumLevel == "Does" ? 3 : x.MinimumLevel == "Helps" ? 4 : 5) <= level).ToList().Count();
                             }
                         }
                     }
+
 
                     foreach (var projectID in projectIDs ?? Enumerable.Empty<string>())
                     {
@@ -397,17 +416,16 @@ namespace CodeCraft_TeamFinder_Services
                                     workHours += teamMember.WorkHours;
                                 }
                             }
-
                         }
                     }
 
-                    if (workHours == 8 && matchSkills > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    if (workHours == 8 && (matchSkills > 0 || matchSkillRequirements > 0) && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersUnavailableList.Add(member);
                     }
 
-                    if ((workHours == 8 && matchSkills > 0 && !teamFinderRequestDTO.PastExperience) || (workHours == 8 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    if ((workHours == 8 && (matchSkills > 0 || matchSkillRequirements > 0) && !teamFinderRequestDTO.PastExperience) || (workHours == 8 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersUnavailableList.Add(member);
@@ -426,11 +444,13 @@ namespace CodeCraft_TeamFinder_Services
 
             if (teamFinderRequestDTO.Available)
             {
-                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0 || x.ProjectIDs == null);
+                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0 || x.ProjectIDs == null || x.ProjectIDs.Count() == 0).ToList();
 
                 int matchSkills = 0;
 
                 int matchTeamRolesAndTechnologyOnPastProject = 0;
+
+                var matchSkillRequirements = 0;
 
                 foreach (var user in usersWorkingOnProjects ?? Enumerable.Empty<User>())
                 {
@@ -440,21 +460,26 @@ namespace CodeCraft_TeamFinder_Services
 
                     var skills = user.Skills;
 
-                    if (teamFinderRequestDTO.PastExperience)
+                    foreach (var skill in skills ?? Enumerable.Empty<Skills>())
                     {
-                        foreach (var skill in skills ?? Enumerable.Empty<Skills>())
+                        var skillID = skill.SkillID;
+
+                        var skillObject = await _skillService.Value.Get(skillID);
+
+                        var level = skill.Level == "Learns" ? 1 : skill.Level == "Knows" ? 2 : skill.Level == "Does" ? 3 : skill.Level == "Helps" ? 4 : 5;
+
+                        if (skillObject != null)
                         {
-                            var skillID = skill.SkillID;
-
-                            var skillObject = await _skillService.Value.Get(skillID);
-
-                            if (skillObject != null)
+                            if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
                             {
-                                if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
-                                {
-                                    matchSkills++;
-                                }
+                                matchSkills++;
                             }
+
+                            if (teamFinderRequestDTO.SkillRequirements != null)
+                            {
+                                matchSkillRequirements += teamFinderRequestDTO.SkillRequirements.Where(x => x.SkillID == skillObject.Id
+                                                          && (x.MinimumLevel == "Learns" ? 1 : x.MinimumLevel == "Knows" ? 2 : x.MinimumLevel == "Does" ? 3 : x.MinimumLevel == "Helps" ? 4 : 5) <= level).ToList().Count();
+                            }                            
                         }
                     }
 
@@ -482,18 +507,17 @@ namespace CodeCraft_TeamFinder_Services
                                         workHours += teamMember.WorkHours;
                                     }
                                 }
-
                             }
                         }
-                    }                    
+                    }
 
-                    if (workHours == 0 && matchSkills > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    if (workHours == 0 && (matchSkills > 0 || matchSkillRequirements > 0) && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersAvailableList.Add(member);
                     }
 
-                    if ((workHours == 0 && matchSkills > 0 && !teamFinderRequestDTO.PastExperience) || (workHours == 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    if ((workHours == 0 && (matchSkills > 0 || matchSkillRequirements > 0) && !teamFinderRequestDTO.PastExperience) || (workHours == 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersAvailableList.Add(member);

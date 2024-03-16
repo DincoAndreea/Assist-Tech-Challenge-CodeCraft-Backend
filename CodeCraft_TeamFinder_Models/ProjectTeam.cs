@@ -44,6 +44,7 @@ namespace CodeCraft_TeamFinder_Models
         public int? Weeks { get; set; }
         public List<string> TechnologyStack { get; set; }
         public List<string> TeamRoleIDs { get; set; }
+        public List<SkillRequirements>? SkillRequirements { get; set; }
         public string OrganizationID { get; set; }
     }
 
