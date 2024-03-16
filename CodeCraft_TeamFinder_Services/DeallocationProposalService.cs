@@ -121,28 +121,29 @@ namespace CodeCraft_TeamFinder_Services
             {
                 var department = await _departmentService.Value.Get(user.DepartmentID);
 
-                if (department.ManagerID != null)
+                if (department != null)
                 {
                     var manager = await _userService.Value.Get(department.ManagerID);
 
-
-                    string fromAddress = "dincoandreea@gmail.com";
-                    string toAddress = "dincoandreea@gmail.com";
-                    string subject = "Deallocation Proposal";
-                    string body = "A member of your department has been proposed to be deallocated from a project. Check the proposal in the app.";
-
-                    SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                    if (manager != null)
                     {
-                        Port = 587,
-                        Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
-                        EnableSsl = true,
-                    };
+                        string fromAddress = "dincoandreea@gmail.com";
+                        string toAddress = "dincoandreea@gmail.com";
+                        string subject = "Deallocation Proposal";
+                        string body = "A member of your department has been proposed to be deallocated from a project. Check the proposal in the app.";
 
-                    using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
-                    {
-                        smtpClient.Send(mailMessage);
+                        SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                        {
+                            Port = 587,
+                            Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
+                            EnableSsl = true,
+                        };
+
+                        using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
+                        {
+                            smtpClient.Send(mailMessage);
+                        }
                     }
-
                 }
             }
 

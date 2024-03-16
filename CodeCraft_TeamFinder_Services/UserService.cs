@@ -51,11 +51,11 @@ namespace CodeCraft_TeamFinder_Services
             {
                 var department = await _departmentService.Value.Get(user.DepartmentID);
 
-                if (department.ManagerID != null)
+                if (department != null)
                 {
-                    var manager = await _repository.Get(department.ManagerID);
+                    var manager = department.ManagerID != null ? await _repository.Get(department.ManagerID) : null;
 
-                    if (user.Skills != null && user.Skills.Count() > 0)
+                    if (user.Skills != null && user.Skills.Count() > 0 && manager != null)
                     {
                         foreach (var skill in user.Skills)
                         {
@@ -96,11 +96,11 @@ namespace CodeCraft_TeamFinder_Services
             {
                 var department = await _departmentService.Value.Get(user.DepartmentID);
 
-                if (department.ManagerID != null)
+                if (department != null)
                 {
-                    var manager = await _repository.Get(department.ManagerID);
+                    var manager = department.ManagerID != null ? await _repository.Get(department.ManagerID) : null;
 
-                    if (user.Skills != null && user.Skills.Count() > 0)
+                    if (user.Skills != null && user.Skills.Count() > 0 && manager != null)
                     {
                         var skillsPending = user.Skills.Where(x => x.Status == "Pending").ToList();
 
@@ -155,22 +155,19 @@ namespace CodeCraft_TeamFinder_Services
             return await _repository.Find("SkillID", id);
         }
 
-        public async Task<IEnumerable<TeamFinderResponseDTO>> TeamFinder(TeamFinderRequestDTO teamFinderRequestDTO)
+        private async Task<List<TeamFinderResponseDTO>> GetPartiallyAvailableEmployees(TeamFinderRequestDTO teamFinderRequestDTO)
         {
             var users = await this.GetUsersByOrganization(teamFinderRequestDTO.OrganizationID);
 
             var usersPartiallyAvailableList = new List<TeamFinderResponseDTO>();
-            var usersOnProjectsCloseToFinishList = new List<TeamFinderResponseDTO>();
-            var usersUnavailableList = new List<TeamFinderResponseDTO>();
-            var usersAvailableList = new List<TeamFinderResponseDTO>();
 
-            if (teamFinderRequestDTO.PartiallyAvailable || teamFinderRequestDTO.Unavailable)
+            if (teamFinderRequestDTO.PartiallyAvailable)
             {
                 var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0);
 
-                bool matchSkills = false;
+                int matchSkills = 0;
 
-                bool matchTeamRolesAndTechnologyOnPastProject = false;
+                int matchTeamRolesAndTechnologyOnPastProject = 0;
 
                 foreach (var user in usersWorkingOnProjects ?? Enumerable.Empty<User>())
                 {
@@ -180,17 +177,105 @@ namespace CodeCraft_TeamFinder_Services
 
                     var skills = user.Skills;
 
-                    foreach (var skill in skills ?? Enumerable.Empty<Skills>())
+                    if (teamFinderRequestDTO.PastExperience)
                     {
-                        var skillID = skill.SkillID;
-
-                        var skillObject = await _skillService.Value.Get(skillID);
-
-                        if (skillObject != null)
+                        foreach (var skill in skills ?? Enumerable.Empty<Skills>())
                         {
-                            if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name) && matchSkills)
+                            var skillID = skill.SkillID;
+
+                            var skillObject = await _skillService.Value.Get(skillID);
+
+                            if (skillObject != null)
                             {
-                                matchTeamRolesAndTechnologyOnPastProject = true;
+                                if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
+                                {
+                                    matchSkills++;
+                                }
+                            }
+                        }
+                    }                    
+
+                    foreach (var projectID in projectIDs ?? Enumerable.Empty<string>())
+                    {
+                        var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
+
+                        var project = await _projectService.Value.Get(projectID);
+
+                        if (project != null && projectTeam != null)
+                        {
+                            if (projectTeam.TeamMembers != null)
+                            {
+                                var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == user.Id).FirstOrDefault();
+
+                                if (!teamMember.Active && teamMember.TeamRoleIDs.Intersect(teamFinderRequestDTO.TeamRoleIDs).Count() > 0 && teamFinderRequestDTO.TechnologyStack.Intersect(project.TechnologyStack).Count() > 0)
+                                {
+                                    matchTeamRolesAndTechnologyOnPastProject++;
+                                }
+
+                                if (teamMember.Active)
+                                {
+                                    workHours += teamMember.WorkHours;
+                                }
+                            }
+                            
+                        }
+                    }
+
+                    if (workHours < 8 && matchSkills > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    {
+                        TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
+                        usersPartiallyAvailableList.Add(member);
+                    }
+
+                    if ((workHours < 8 && matchSkills > 0 && !teamFinderRequestDTO.PastExperience) || (workHours < 8 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    {
+                        TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
+                        usersPartiallyAvailableList.Add(member);
+                    }
+                }                
+            }
+
+            return usersPartiallyAvailableList;
+        }
+
+        private async Task<List<TeamFinderResponseDTO>> GetEmployeesOnProjectsCloseToFinish(TeamFinderRequestDTO teamFinderRequestDTO)
+        {
+            var users = await this.GetUsersByOrganization(teamFinderRequestDTO.OrganizationID);
+
+            var usersOnProjectsCloseToFinishList = new List<TeamFinderResponseDTO>();
+
+            if (teamFinderRequestDTO.ProjectsCloseToFinish)
+            {
+                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0);
+
+                int matchSkills = 0;
+
+                int matchTeamRolesAndTechnologyOnPastProject = 0;
+
+                int projectsCloseToFinish = 0;
+
+                foreach (var user in usersWorkingOnProjects ?? Enumerable.Empty<User>())
+                {
+                    int workHours = 0;
+
+                    var projectIDs = user.ProjectIDs;
+
+                    var skills = user.Skills;
+
+                    if (teamFinderRequestDTO.PastExperience)
+                    {
+                        foreach (var skill in skills ?? Enumerable.Empty<Skills>())
+                        {
+                            var skillID = skill.SkillID;
+
+                            var skillObject = await _skillService.Value.Get(skillID);
+
+                            if (skillObject != null)
+                            {
+                                if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
+                                {
+                                    matchSkills++;
+                                }
                             }
                         }
                     }
@@ -201,27 +286,128 @@ namespace CodeCraft_TeamFinder_Services
 
                         var project = await _projectService.Value.Get(projectID);
 
-                        var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == user.Id).FirstOrDefault();
-
-                        if (!teamMember.Active && teamMember.TeamRoleIDs.Intersect(teamFinderRequestDTO.TeamRoleIDs).Count() > 0 && teamFinderRequestDTO.TechnologyStack.Intersect(project.TechnologyStack).Count() > 0)
+                        if (project != null && projectTeam != null)
                         {
-                            matchSkills = true;
-                        }
+                            if (projectTeam.TeamMembers != null)
+                            {
+                                var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == user.Id).FirstOrDefault();
 
-                        if (teamMember.Active)
-                        {
-                            workHours += teamMember.WorkHours;
-                        }
+                                if (!teamMember.Active && teamMember.TeamRoleIDs.Intersect(teamFinderRequestDTO.TeamRoleIDs).Count() > 0 && teamFinderRequestDTO.TechnologyStack.Intersect(project.TechnologyStack).Count() > 0)
+                                {
+                                    matchTeamRolesAndTechnologyOnPastProject++;
+                                }
 
+                                if (teamMember.Active)
+                                {
+                                    workHours += teamMember.WorkHours;
+                                }
+                            }
+
+                            if (project.DeadlineDate > DateTime.UtcNow)
+                            {
+                                TimeSpan? difference = project.DeadlineDate - DateTime.Now;
+
+                                if (difference.Value.TotalDays / 7 < teamFinderRequestDTO.Weeks)
+                                {
+                                    projectsCloseToFinish++;
+                                }
+                            }
+
+                        }
                     }
 
-                    if (workHours < 8 && matchSkills && matchTeamRolesAndTechnologyOnPastProject)
+                    if (projectsCloseToFinish > 0 && matchSkills > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
-                        usersPartiallyAvailableList.Add(member);
+                        usersOnProjectsCloseToFinishList.Add(member);
                     }
 
-                    if (workHours == 8 && matchSkills && matchTeamRolesAndTechnologyOnPastProject && teamFinderRequestDTO.Unavailable)
+                    if ((projectsCloseToFinish > 0 && matchSkills > 0 && !teamFinderRequestDTO.PastExperience) || (projectsCloseToFinish > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    {
+                        TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
+                        usersOnProjectsCloseToFinishList.Add(member);
+                    }
+
+                    
+                }
+            }
+
+            return usersOnProjectsCloseToFinishList;
+        }
+
+        private async Task<List<TeamFinderResponseDTO>> GetUnavailableEmployees(TeamFinderRequestDTO teamFinderRequestDTO)
+        {
+            var users = await this.GetUsersByOrganization(teamFinderRequestDTO.OrganizationID);
+
+            var usersUnavailableList = new List<TeamFinderResponseDTO>();
+
+            if (teamFinderRequestDTO.Unavailable)
+            {
+                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0);
+
+                int matchSkills = 0;
+
+                int matchTeamRolesAndTechnologyOnPastProject = 0;
+
+                foreach (var user in usersWorkingOnProjects ?? Enumerable.Empty<User>())
+                {
+                    int workHours = 0;
+
+                    var projectIDs = user.ProjectIDs;
+
+                    var skills = user.Skills;
+
+                    if (teamFinderRequestDTO.PastExperience)
+                    {
+                        foreach (var skill in skills ?? Enumerable.Empty<Skills>())
+                        {
+                            var skillID = skill.SkillID;
+
+                            var skillObject = await _skillService.Value.Get(skillID);
+
+                            if (skillObject != null)
+                            {
+                                if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
+                                {
+                                    matchSkills++;
+                                }
+                            }
+                        }
+                    }
+
+                    foreach (var projectID in projectIDs ?? Enumerable.Empty<string>())
+                    {
+                        var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
+
+                        var project = await _projectService.Value.Get(projectID);
+
+                        if (project != null && projectTeam != null)
+                        {
+                            if (projectTeam.TeamMembers != null)
+                            {
+                                var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == user.Id).FirstOrDefault();
+
+                                if (!teamMember.Active && teamMember.TeamRoleIDs.Intersect(teamFinderRequestDTO.TeamRoleIDs).Count() > 0 && teamFinderRequestDTO.TechnologyStack.Intersect(project.TechnologyStack).Count() > 0)
+                                {
+                                    matchTeamRolesAndTechnologyOnPastProject++;
+                                }
+
+                                if (teamMember.Active)
+                                {
+                                    workHours += teamMember.WorkHours;
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (workHours == 8 && matchSkills > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    {
+                        TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
+                        usersUnavailableList.Add(member);
+                    }
+
+                    if ((workHours == 8 && matchSkills > 0 && !teamFinderRequestDTO.PastExperience) || (workHours == 8 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersUnavailableList.Add(member);
@@ -229,156 +415,133 @@ namespace CodeCraft_TeamFinder_Services
                 }
             }
 
-            if (teamFinderRequestDTO.ProjectsCloseToFinish)
+            return usersUnavailableList;
+        }
+
+        private async Task<List<TeamFinderResponseDTO>> GetAvailableEmployees(TeamFinderRequestDTO teamFinderRequestDTO)
+        {
+            var users = await this.GetUsersByOrganization(teamFinderRequestDTO.OrganizationID);
+
+            var usersAvailableList = new List<TeamFinderResponseDTO>();
+
+            if (teamFinderRequestDTO.Available)
             {
-                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0);
+                var usersWorkingOnProjects = users.Where(x => x.ProjectIDs?.Count() > 0 || x.ProjectIDs == null);
 
-                bool matchSkills = false;
+                int matchSkills = 0;
 
-                bool matchTeamRolesAndTechnologyOnPastProject = false;
+                int matchTeamRolesAndTechnologyOnPastProject = 0;
 
                 foreach (var user in usersWorkingOnProjects ?? Enumerable.Empty<User>())
                 {
                     int workHours = 0;
 
-                    var skills = user.Skills;
-
                     var projectIDs = user.ProjectIDs;
 
-                    foreach (var skill in skills ?? Enumerable.Empty<Skills>())
-                    {
-                        var skillID = skill.SkillID;
-
-                        var skillObject = await _skillService.Value.Get(skillID);
-
-                        if (skillObject != null)
-                        {
-                            if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name) && matchSkills)
-                            {
-                                matchTeamRolesAndTechnologyOnPastProject = true;
-                            }
-                        }
-                    }
-
-                    foreach (var projectID in projectIDs ?? Enumerable.Empty<string>())
-                    {
-                        var project = await _projectService.Value.Get(projectID);
-
-                        var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
-
-                        var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == user.Id).FirstOrDefault();
-
-                        if (!teamMember.Active && teamMember.TeamRoleIDs.Intersect(teamFinderRequestDTO.TeamRoleIDs).Count() > 0 && teamFinderRequestDTO.TechnologyStack.Intersect(project.TechnologyStack).Count() > 0)
-                        {
-                            matchSkills = true;
-                        }
-
-                        if (teamMember.Active)
-                        {
-                            workHours += teamMember.WorkHours;
-                        }
-
-                        if (project.DeadlineDate > DateTime.UtcNow)
-                        {
-                            TimeSpan? difference = project.DeadlineDate - DateTime.Now;
-
-                            if (difference.Value.TotalDays / 7 < teamFinderRequestDTO.Weeks && matchSkills && matchTeamRolesAndTechnologyOnPastProject)
-                            {
-                                TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
-                                usersOnProjectsCloseToFinishList.Add(member);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (teamFinderRequestDTO.Available)
-            {
-                var usersAvailable = users.Where(x => x.ProjectIDs?.Count() == 0).ToList();
-
-                foreach (var user in usersAvailable ?? Enumerable.Empty<User>())
-                {
                     var skills = user.Skills;
 
-                    var projectIDs = user.ProjectIDs;
-
-                    bool matchSkills = false;
-
-                    bool matchTeamRolesAndTechnologyOnPastProject = false;
-
-                    foreach (var projectID in projectIDs ?? Enumerable.Empty<string>())
+                    if (teamFinderRequestDTO.PastExperience)
                     {
-                        var project = await _projectService.Value.Get(projectID);
-
-                        var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
-
-                        var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == user.Id).FirstOrDefault();
-
-                        if (!teamMember.Active && teamMember.TeamRoleIDs.Intersect(teamFinderRequestDTO.TeamRoleIDs).Count() > 0 && teamFinderRequestDTO.TechnologyStack.Intersect(project.TechnologyStack).Count() > 0)
+                        foreach (var skill in skills ?? Enumerable.Empty<Skills>())
                         {
-                            matchSkills = true;
-                        }
-                    }
+                            var skillID = skill.SkillID;
 
-                    foreach (var skill in skills ?? Enumerable.Empty<Skills>())
-                    {
-                        var skillID = skill.SkillID;
+                            var skillObject = await _skillService.Value.Get(skillID);
 
-                        var skillObject = await _skillService.Value.Get(skillID);
-
-                        if (skillObject != null)
-                        {
-                            if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name) && matchSkills)
+                            if (skillObject != null)
                             {
-                                matchTeamRolesAndTechnologyOnPastProject = true;
+                                if (teamFinderRequestDTO.TechnologyStack.Contains(skillObject.Name))
+                                {
+                                    matchSkills++;
+                                }
                             }
                         }
                     }
 
-                    if (matchSkills && matchTeamRolesAndTechnologyOnPastProject)
+                    if (projectIDs != null)
                     {
-                        TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = 0 };
+                        foreach (var projectID in projectIDs ?? Enumerable.Empty<string>())
+                        {
+                            var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
+
+                            var project = await _projectService.Value.Get(projectID);
+
+                            if (project != null && projectTeam != null)
+                            {
+                                if (projectTeam.TeamMembers != null)
+                                {
+                                    var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == user.Id).FirstOrDefault();
+
+                                    if (!teamMember.Active && teamMember.TeamRoleIDs.Intersect(teamFinderRequestDTO.TeamRoleIDs).Count() > 0 && teamFinderRequestDTO.TechnologyStack.Intersect(project.TechnologyStack).Count() > 0)
+                                    {
+                                        matchTeamRolesAndTechnologyOnPastProject++;
+                                    }
+
+                                    if (teamMember.Active)
+                                    {
+                                        workHours += teamMember.WorkHours;
+                                    }
+                                }
+
+                            }
+                        }
+                    }                    
+
+                    if (workHours == 0 && matchSkills > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    {
+                        TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
+                        usersAvailableList.Add(member);
+                    }
+
+                    if ((workHours == 0 && matchSkills > 0 && !teamFinderRequestDTO.PastExperience) || (workHours == 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    {
+                        TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersAvailableList.Add(member);
                     }
                 }
             }
 
+            return usersAvailableList;
+        }
+
+        public async Task<IEnumerable<TeamFinderResponseDTO>> TeamFinder(TeamFinderRequestDTO teamFinderRequestDTO)
+        {
             if (teamFinderRequestDTO.PartiallyAvailable)
             {
                 if (teamFinderRequestDTO.ProjectsCloseToFinish)
                 {
-                    return usersPartiallyAvailableList.Concat(usersOnProjectsCloseToFinishList);
+                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO));
                 }
 
                 if (teamFinderRequestDTO.Unavailable)
                 {
-                    return usersPartiallyAvailableList.Concat(usersUnavailableList);
+                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
                 }
 
                 if (teamFinderRequestDTO.ProjectsCloseToFinish && teamFinderRequestDTO.Unavailable)
                 {
-                    return usersPartiallyAvailableList.Concat(usersOnProjectsCloseToFinishList.Concat(usersUnavailableList));
+                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
                 }
 
-                return usersPartiallyAvailableList;
+                return await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO);
             }
 
             if (teamFinderRequestDTO.ProjectsCloseToFinish)
             {
                 if (teamFinderRequestDTO.Unavailable)
                 {
-                    return usersOnProjectsCloseToFinishList.Concat(usersUnavailableList);
+                    return (await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
                 }
 
-                return usersOnProjectsCloseToFinishList;
+                return await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO);
             }
 
             if (teamFinderRequestDTO.Unavailable)
             {
-                return usersUnavailableList;
+                return await this.GetUnavailableEmployees(teamFinderRequestDTO);
             }
 
-            return usersAvailableList;
+            return await this.GetAvailableEmployees(teamFinderRequestDTO);
         }
 
         public async Task<IEnumerable<User>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO)
@@ -508,11 +671,18 @@ namespace CodeCraft_TeamFinder_Services
         {
             var systemRole = (await _systemRoleService.Value.Find("Name", "Employee")).First();
 
-            User user = new User { Name = registerEmployeeRequest.Name, Email = registerEmployeeRequest.Email, Password = registerEmployeeRequest.Password, OrganizationID = registerEmployeeRequest.OrganizationID, SystemRoleIDs = new List<string> { systemRole.Id } };
+            var emailUsed = await _repository.Find("Email", registerEmployeeRequest.Email);
 
-            bool employeeCreated = await _repository.Create(user);
+            if (emailUsed == null)
+            {
+                User user = new User { Name = registerEmployeeRequest.Name, Email = registerEmployeeRequest.Email, Password = registerEmployeeRequest.Password, OrganizationID = registerEmployeeRequest.OrganizationID, SystemRoleIDs = new List<string> { systemRole.Id } };
 
-            return employeeCreated;
+                bool employeeCreated = await _repository.Create(user);
+
+                return employeeCreated;
+            }
+
+            return false;
         }
     }
 }

@@ -40,6 +40,7 @@ namespace CodeCraft_TeamFinder_Models
         public bool ProjectsCloseToFinish { get; set; }
         public bool Unavailable { get; set; }
         public bool Available { get; set; }
+        public bool PastExperience {  get; set; }
         public int? Weeks { get; set; }
         public List<string> TechnologyStack { get; set; }
         public List<string> TeamRoleIDs { get; set; }
