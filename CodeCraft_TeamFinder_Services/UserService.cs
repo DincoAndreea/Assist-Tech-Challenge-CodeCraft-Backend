@@ -655,13 +655,18 @@ namespace CodeCraft_TeamFinder_Services
 
             var systemRole = (await _systemRoleService.Value.Find("Name", "Organization Administrator")).First();
 
-            if (organizationCreated)
+            var emailUsed = await _repository.Find("Email", registerAdminRequest.Email);
+
+            if (emailUsed == null)
             {
-                User user = new User { Name = registerAdminRequest.Name, Email = registerAdminRequest.Email, Password = registerAdminRequest.Password, OrganizationID = organization.Id, SystemRoleIDs = new List<string> { systemRole.Id } };
+                if (organizationCreated)
+                {
+                    User user = new User { Name = registerAdminRequest.Name, Email = registerAdminRequest.Email, Password = registerAdminRequest.Password, OrganizationID = organization.Id, SystemRoleIDs = new List<string> { systemRole.Id } };
 
-                bool adminCreated = await _repository.Create(user);
+                    bool adminCreated = await _repository.Create(user);
 
-                return adminCreated;
+                    return adminCreated;
+                }
             }
 
             return false;
