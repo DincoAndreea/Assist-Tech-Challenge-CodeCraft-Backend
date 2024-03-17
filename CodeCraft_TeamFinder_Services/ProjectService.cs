@@ -211,7 +211,13 @@ namespace CodeCraft_TeamFinder_Services
 
         public async Task<bool> Create(Project project)
         {
-            return await _repository.Create(project);
+            var successProject = await _repository.Create(project);
+
+            ProjectTeam projectTeam = new ProjectTeam { ProjectID = project.Id, TeamMembers = new List<TeamMembers>() };
+
+            var successprojectTeam = await _projectTeamService.Value.Create(projectTeam);
+
+            return successProject && successprojectTeam;
         }
 
         public async Task<bool> Update(Project project)

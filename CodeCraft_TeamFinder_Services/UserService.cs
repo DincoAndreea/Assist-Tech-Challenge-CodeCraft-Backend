@@ -587,7 +587,18 @@ namespace CodeCraft_TeamFinder_Services
 
             var projectJson = Newtonsoft.Json.JsonConvert.SerializeObject(teamFinderOpenAI.Project);
 
-            var users = await this.GetUsersByOrganization(teamFinderOpenAI.Project.OrganizationID);
+            var users = (await this.GetUsersByOrganization(teamFinderOpenAI.Project.OrganizationID)).ToList();
+
+            var usersString = "";
+
+            for (int i = 0; i < users.Count(); i++)
+            {
+                usersString += $"\n {i + 1}. Name: {users[i].Name}, Skills: ";
+
+                var skillsUser = users[i].Skills;
+
+
+            }
 
             var usersJson = Newtonsoft.Json.JsonConvert.SerializeObject(users);
 
@@ -658,8 +669,8 @@ namespace CodeCraft_TeamFinder_Services
                 {
                     DeploymentName = "atc-2024-gpt-35-turbo",
                     Temperature = 0.1f,
-                    MaxTokens = 100,
-                    FrequencyPenalty = 1.0f,                    
+                    MaxTokens = 100000,
+                    FrequencyPenalty = 1.0f
                 };
 
                 Response<Completions> completionsResponse = client.GetCompletions(completionsOptions);
