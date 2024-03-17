@@ -488,7 +488,7 @@ namespace CodeCraft_TeamFinder_Services
                             {
                                 matchSkillRequirements += teamFinderRequestDTO.SkillRequirements.Where(x => x.SkillID == skillObject.Id
                                                           && (x.MinimumLevel == "Learns" ? 1 : x.MinimumLevel == "Knows" ? 2 : x.MinimumLevel == "Does" ? 3 : x.MinimumLevel == "Helps" ? 4 : 5) <= level).ToList().Count();
-                            }                            
+                            }
                         }
                     }
 
@@ -577,15 +577,32 @@ namespace CodeCraft_TeamFinder_Services
             return await this.GetAvailableEmployees(teamFinderRequestDTO);
         }
 
-        public async Task<string> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
+        public async Task<IEnumerable<TeamFinderResponseDTO>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
         {
-            var teamfinder = new List<TeamFinderResponseDTO>();
+            var teamFinder = new List<TeamFinderResponseDTO>();
 
             string completion = "";
 
-            var teamFinderResponse = Newtonsoft.Json.JsonConvert.SerializeObject(teamfinder);
+            string skillProject = "";
 
-            var projectJson = Newtonsoft.Json.JsonConvert.SerializeObject(teamFinderOpenAI.Project);
+            var technologyStack = string.Join(", ", teamFinderOpenAI.Project.TechnologyStack);
+
+            var skillRequirements = teamFinderOpenAI.Project.SkillRequirements;
+
+            if (skillRequirements != null)
+            {
+                for (int i = 0; i < skillRequirements.Count(); i++)
+                {
+                    var skillRequirementDetails = await _skillService.Value.Get(skillRequirements[i].SkillID);
+
+                    skillProject += $"{skillRequirementDetails.Name} (Minimum Level: {skillRequirements[i].MinimumLevel}), ";
+
+                    if (i == skillRequirements.Count() - 1)
+                    {
+                        skillProject += $"{skillRequirementDetails.Name} (Minimum Level: {skillRequirements[i].MinimumLevel}).";
+                    }
+                }
+            }
 
             var users = (await this.GetUsersByOrganization(teamFinderOpenAI.Project.OrganizationID)).ToList();
 
@@ -597,101 +614,61 @@ namespace CodeCraft_TeamFinder_Services
 
                 var skillsUser = users[i].Skills;
 
-
-            }
-
-            var usersJson = Newtonsoft.Json.JsonConvert.SerializeObject(users);
-
-            var projects = await _projectService.Value.GetProjectsByOrganization(teamFinderOpenAI.Project.OrganizationID);
-
-            var projectsJson = Newtonsoft.Json.JsonConvert.SerializeObject(await _projectService.Value.GetProjectsByOrganization(teamFinderOpenAI.Project.OrganizationID));
-
-            var projectTeams = new List<ProjectTeam>();
-
-            foreach (var projectObject in projects ?? Enumerable.Empty<Project>())
-            {
-                if (projectObject != null)
+                if (skillsUser != null && skillsUser.Count() > 0)
                 {
-                    var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectObject.Id)).FirstOrDefault();
-
-                    if (projectTeam != null)
+                    for (int j = 0; j < skillsUser.Count(); j++)
                     {
-                        projectTeams.Add(projectTeam);
-                    }                    
-                }                
+                        var skillDetails = await _skillService.Value.Get(skillsUser[j].SkillID);
+
+                        usersString += $"{skillDetails.Name} (Level: {skillsUser[j].Level}, Experience: {skillsUser[j].Experience}), ";
+
+                        if (j == skillsUser.Count() - 1)
+                        {
+                            usersString += $"{skillDetails.Name} (Level: {skillsUser[j].Level}, Experience: {skillsUser[j].Experience}).";
+                        }
+                    }
+                }
             }
-
-            var projectTeamsJson = Newtonsoft.Json.JsonConvert.SerializeObject(projectTeams);
-
-            var skills = await _skillService.Value.GetSkillsByOrganization(teamFinderOpenAI.Project.OrganizationID);
-
-            var skillsJson = Newtonsoft.Json.JsonConvert.SerializeObject(skills);
-
-            var teamRoles = await _teamRoleService.Value.GetTeamRolesByOrganization(teamFinderOpenAI.Project.OrganizationID);
-
-            var teamRolesJson = Newtonsoft.Json.JsonConvert.SerializeObject(teamRoles);
-
-            var skillCategories = await _skillCategoryService.Value.GetSkillCategoryByOrganization(teamFinderOpenAI.Project.OrganizationID);
-
-            var skillCategoriesJson = Newtonsoft.Json.JsonConvert.SerializeObject(skillCategories);
-
-            var departments = await _departmentService.Value.GetDepartmentsByOrganization(teamFinderOpenAI.Project.OrganizationID);
-
-            var departmentsJson = Newtonsoft.Json.JsonConvert.SerializeObject(departments);
 
             var endpoint = GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT", EnvironmentVariableTarget.User);
             var key = GetEnvironmentVariable("AZURE_OPENAI_API_KEY", EnvironmentVariableTarget.User);
-
-            var prompts = new List<string>();
-
-            prompts.Add("I want to create a team for my project which include these details: " + projectJson +
-                        ".\nHere are some additional context I want to add: " + teamFinderOpenAI.AdditionalContext +
-                        ".\nBecause I have a limited amount of tokens I will have to split the context for you so please remember all the data I send you and after I send you everything analyze the data and make a list of employees that meet the criteria. " +
-                        "Here is the data in my database which has 7 MongoDB collections: ");
-            prompts.Add("\nUsers: " + usersJson);
-            prompts.Add("\nProjects: " + projectsJson);
-            prompts.Add("\nProject teams: " + projectTeamsJson);
-            prompts.Add("\nSkills: " + skillsJson);
-            prompts.Add("\nTeam roles: " + teamRolesJson);
-            prompts.Add("\nSkill categories: " + skillCategoriesJson);
-            prompts.Add("\nDepartments: " + departmentsJson);
-            prompts.Add("\nI want the response to be a list of employees that fit these criteria and the response should be in JSON format and have this format: \n" + teamFinderResponse);
-
-            completion += prompts;
 
             if (!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(key))
             {
                 var client = new OpenAIClient(new Uri(endpoint), new AzureKeyCredential(key));
 
-
-
                 CompletionsOptions completionsOptions = new()
                 {
+                    Prompts = { $"Return a list of all users that have skills matching this technology stack: {technologyStack}. Also their skills should match these skill requirements: {skillProject}.\n{teamFinderOpenAI.AdditionalContext}\nPlease make sure to only give me a list with their names.\n\n\nUsers:\n{usersString}\n\nUsers output format:\\n[\\n  {{\\n     \\\"Name\\\": \\\"\\\"\\n  }}\\n]\\n\\nResponse:" },
                     DeploymentName = "atc-2024-gpt-35-turbo",
-                    Temperature = 0.1f,
-                    MaxTokens = 100000,
-                    FrequencyPenalty = 1.0f
+                    Temperature = (float)0,
+                    MaxTokens = 454,
+                    StopSequences = { "]" },
+                    NucleusSamplingFactor = (float)1,
+                    FrequencyPenalty = (float)0,
+                    PresencePenalty = (float)0
                 };
 
                 Response<Completions> completionsResponse = client.GetCompletions(completionsOptions);
 
-                foreach (var prompt in prompts)
+                completion = completionsResponse.Value.Choices[0].Text;
+
+                var names = users.Select(x => x.Name);
+
+                foreach (var user in users)
                 {
-                    // Set the prompt in the completion options
-                    completionsOptions.Prompts.Clear();
-                    completionsOptions.Prompts.Add(prompt);
+                    if (completion.Contains(user.Name))
+                    {
+                        int workHours = await _projectTeamService.Value.GetWorkHours(user.Id);
 
-                    // Send the request to OpenAI and retrieve completions
-                    completionsResponse = client.GetCompletions(completionsOptions);
+                        TeamFinderResponseDTO teamFinderResponse = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
 
-                    // Append completion text to the result
-                    completion += completionsResponse.Value.Choices[0].Text;
+                        teamFinder.Add(teamFinderResponse);
+                    }
                 }
-                
-                Console.WriteLine($"Chatbot: {completion}");
             }
 
-            return completion;
+            return teamFinder;
         }
 
         public async Task<IEnumerable<User>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO)
@@ -807,7 +784,7 @@ namespace CodeCraft_TeamFinder_Services
 
             var emailUsed = await _repository.Find("Email", registerAdminRequest.Email);
 
-            if (emailUsed == null)
+            if (emailUsed == null || emailUsed.Count() == 0)
             {
                 if (organizationCreated)
                 {
@@ -819,6 +796,8 @@ namespace CodeCraft_TeamFinder_Services
                 }
             }
 
+            
+
             return false;
         }
 
@@ -828,7 +807,7 @@ namespace CodeCraft_TeamFinder_Services
 
             var emailUsed = await _repository.Find("Email", registerEmployeeRequest.Email);
 
-            if (emailUsed == null)
+            if (emailUsed == null || emailUsed.Count() == 0)
             {
                 User user = new User { Name = registerEmployeeRequest.Name, Email = registerEmployeeRequest.Email, Password = registerEmployeeRequest.Password, OrganizationID = registerEmployeeRequest.OrganizationID, SystemRoleIDs = new List<string> { systemRole.Id } };
 

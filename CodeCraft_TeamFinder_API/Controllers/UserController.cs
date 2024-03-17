@@ -155,7 +155,7 @@ namespace TeamFinderAPI.Controllers
         }
 
         [HttpPost("TeamFinderOpenAI")]
-        public async Task<ActionResult<string>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
+        public async Task<ActionResult<IEnumerable<TeamFinderResponseDTO>>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
         {
             if (!ObjectId.TryParse(teamFinderOpenAI.Project.Id, out _))
             {
