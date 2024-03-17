@@ -15,13 +15,17 @@ namespace CodeCraft_TeamFinder_Services
         private readonly Lazy<IUserService> _userService;
         private readonly Lazy<IProjectTeamService> _projectTeamService;
         private readonly Lazy<ITeamRoleService> _teamRoleService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<ISystemRoleService> _systemRoleService;
 
-        public ProjectService(IRepository<Project> repository, Lazy<IUserService> userService, Lazy<IProjectTeamService> projectTeamService, Lazy<ITeamRoleService> teamRoleService)
+        public ProjectService(IRepository<Project> repository, Lazy<IUserService> userService, Lazy<IProjectTeamService> projectTeamService, Lazy<ITeamRoleService> teamRoleService, Lazy<ISkillService> skillService, Lazy<ISystemRoleService> systemRoleService)
         {
             _repository = repository;
             _userService = userService;
             _projectTeamService = projectTeamService;
             _teamRoleService = teamRoleService;
+            _skillService = skillService;
+            _systemRoleService = systemRoleService;
         }
 
         public async Task<Project> Get(string id)
@@ -120,6 +124,84 @@ namespace CodeCraft_TeamFinder_Services
             ProjectDetailsDTO projectDetailsDTO = new ProjectDetailsDTO { Name = project.Name, Period = project.Period, StartDate = project.StartDate, DeadlineDate = project.DeadlineDate, Status = project.Status, Description = project.Description, TechnologyStack = project.TechnologyStack, TeamMembers = teamMembersList };
 
             return projectDetailsDTO;
+        }
+
+        private int DifferenceInMonths(DateTime startDate, DateTime endDate)
+        {
+            int years = endDate.Year - startDate.Year;
+            int months = endDate.Month - startDate.Month;
+
+            // If endDate's day is less than startDate's day, decrease months by 1
+            if (endDate.Day < startDate.Day)
+            {
+                months--;
+            }
+
+            // Convert years to months and add to the months difference
+            int totalMonths = years * 12 + months;
+
+            return totalMonths;
+        }
+
+        public async Task SkillUpgradeProposal()
+        {
+            var systemRole = (await _systemRoleService.Value.Find("Name", "Employee")).First();
+
+            if (systemRole != null)
+            {
+                var users = (await _userService.Value.GetAll()).Where(x => x.SystemRoleIDs != null && x.SystemRoleIDs.Contains(systemRole.Id));
+
+                foreach (var user in users)
+                {
+                    var projects = (await this.GetEmployeeProjects(user.Id)).CurrentProjects;
+
+                    foreach (var project in projects)
+                    {
+                        var projectDetails = await _repository.Get(project.ProjectID);
+
+                        var skillRequirements = projectDetails.SkillRequirements?.Select(x => x.SkillID);
+
+                        var roles = project.Roles;
+
+                        if (DifferenceInMonths(projectDetails.StartDate, DateTime.Now) >= 3)
+                        {
+                            if (skillRequirements != null && skillRequirements.Count() > 0 && user.Skills != null && user.Skills.Count() > 0)
+                            {
+                                var commonSkills = user.Skills.Select(x => x.SkillID).Intersect(skillRequirements);
+
+                                if (commonSkills.Count() > 0)
+                                {
+                                    foreach (var skill in commonSkills)
+                                    {
+                                        var skillUpgrade = user.Skills.Where(x => x.SkillID == skill).FirstOrDefault();
+
+                                        var index = user.Skills.IndexOf(skillUpgrade);
+
+                                        user.Skills.Remove(skillUpgrade);
+
+                                        skillUpgrade.Status = "Pending Upgrade";
+
+                                        user.Skills.Insert(index, skillUpgrade);
+
+                                        await _userService.Value.Update(user);
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var skill in skillRequirements)
+                                    {
+                                        Skills addSkill = new Skills { SkillID = skill, Status = "Pending Add" };
+
+                                        user.Skills.Add(addSkill);
+
+                                        await _userService.Value.Update(user);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public async Task<IEnumerable<Project>> Find(string fieldName, string fieldValue)

@@ -14,10 +14,10 @@ namespace CodeCraft_TeamFinder_Models
         public string SkillID { get; set; }
 
         [BsonElement("Level"), BsonRepresentation(BsonType.String)]
-        public string Level { get; set; }
+        public string? Level { get; set; }
 
         [BsonElement("Experience"), BsonRepresentation(BsonType.String)]
-        public string Experience { get; set; }
+        public string? Experience { get; set; }
 
         [BsonElement("TrainingTitle"), BsonRepresentation(BsonType.String)]
         public string? TrainingTitle { get; set; }

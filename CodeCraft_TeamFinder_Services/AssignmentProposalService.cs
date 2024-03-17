@@ -102,14 +102,20 @@ namespace CodeCraft_TeamFinder_Services
                             projectTeam.TeamMembers = new List<TeamMembers> { newTeamMember };
                         }
 
-                        projectTeam.TeamMembers.Add(newTeamMember);
+                        var userExists = projectTeam.TeamMembers.Select(x => x.UserID == assignmentProposal.UserID).FirstOrDefault();
 
-                        bool projectTeamUpdated = await _projectTeamService.Value.Update(projectTeam);
-
-                        if (assignmentProposalUpdated && userUpdated && projectTeamUpdated)
+                        if (!userExists)
                         {
-                            return true;
+                            projectTeam.TeamMembers.Add(newTeamMember);
+
+                            bool projectTeamUpdated = await _projectTeamService.Value.Update(projectTeam);
+
+                            if (assignmentProposalUpdated && userUpdated && projectTeamUpdated)
+                            {
+                                return true;
+                            }
                         }
+                        
                     }
                 }
             }

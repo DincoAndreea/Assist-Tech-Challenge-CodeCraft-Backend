@@ -10,6 +10,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection.Emit;
+using static System.Environment;
+using Azure.AI.OpenAI;
+using Azure;
+using MongoDB.Bson.IO;
+using Newtonsoft.Json;
 
 namespace CodeCraft_TeamFinder_Services
 {
@@ -22,8 +27,10 @@ namespace CodeCraft_TeamFinder_Services
         private readonly Lazy<IProjectService> _projectService;
         private readonly Lazy<ISkillService> _skillService;
         private readonly Lazy<IDepartmentService> _departmentService;
+        private readonly Lazy<ITeamRoleService> _teamRoleService;
+        private readonly Lazy<ISkillCategoryService> _skillCategoryService;
 
-        public UserService(IRepository<User> repository, Lazy<IOrganizationService> organizationService, Lazy<ISystemRoleService> systemRoleService, Lazy<IProjectTeamService> projectTeamService, Lazy<IProjectService> projectService, Lazy<ISkillService> skillService, Lazy<IDepartmentService> departmentService)
+        public UserService(IRepository<User> repository, Lazy<IOrganizationService> organizationService, Lazy<ISystemRoleService> systemRoleService, Lazy<IProjectTeamService> projectTeamService, Lazy<IProjectService> projectService, Lazy<ISkillService> skillService, Lazy<IDepartmentService> departmentService, Lazy<ITeamRoleService> teamRoleService, Lazy<ISkillCategoryService> skillCategoryService)
         {
             _repository = repository;
             _organizationService = organizationService;
@@ -32,6 +39,8 @@ namespace CodeCraft_TeamFinder_Services
             _projectService = projectService;
             _skillService = skillService;
             _departmentService = departmentService;
+            _teamRoleService = teamRoleService;
+            _skillCategoryService = skillCategoryService;
         }
 
         public async Task<User> Get(string id)
@@ -566,6 +575,112 @@ namespace CodeCraft_TeamFinder_Services
             }
 
             return await this.GetAvailableEmployees(teamFinderRequestDTO);
+        }
+
+        public async Task<string> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
+        {
+            var teamfinder = new List<TeamFinderResponseDTO>();
+
+            string completion = "";
+
+            var teamFinderResponse = Newtonsoft.Json.JsonConvert.SerializeObject(teamfinder);
+
+            var projectJson = Newtonsoft.Json.JsonConvert.SerializeObject(teamFinderOpenAI.Project);
+
+            var users = await this.GetUsersByOrganization(teamFinderOpenAI.Project.OrganizationID);
+
+            var usersJson = Newtonsoft.Json.JsonConvert.SerializeObject(users);
+
+            var projects = await _projectService.Value.GetProjectsByOrganization(teamFinderOpenAI.Project.OrganizationID);
+
+            var projectsJson = Newtonsoft.Json.JsonConvert.SerializeObject(await _projectService.Value.GetProjectsByOrganization(teamFinderOpenAI.Project.OrganizationID));
+
+            var projectTeams = new List<ProjectTeam>();
+
+            foreach (var projectObject in projects ?? Enumerable.Empty<Project>())
+            {
+                if (projectObject != null)
+                {
+                    var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectObject.Id)).FirstOrDefault();
+
+                    if (projectTeam != null)
+                    {
+                        projectTeams.Add(projectTeam);
+                    }                    
+                }                
+            }
+
+            var projectTeamsJson = Newtonsoft.Json.JsonConvert.SerializeObject(projectTeams);
+
+            var skills = await _skillService.Value.GetSkillsByOrganization(teamFinderOpenAI.Project.OrganizationID);
+
+            var skillsJson = Newtonsoft.Json.JsonConvert.SerializeObject(skills);
+
+            var teamRoles = await _teamRoleService.Value.GetTeamRolesByOrganization(teamFinderOpenAI.Project.OrganizationID);
+
+            var teamRolesJson = Newtonsoft.Json.JsonConvert.SerializeObject(teamRoles);
+
+            var skillCategories = await _skillCategoryService.Value.GetSkillCategoryByOrganization(teamFinderOpenAI.Project.OrganizationID);
+
+            var skillCategoriesJson = Newtonsoft.Json.JsonConvert.SerializeObject(skillCategories);
+
+            var departments = await _departmentService.Value.GetDepartmentsByOrganization(teamFinderOpenAI.Project.OrganizationID);
+
+            var departmentsJson = Newtonsoft.Json.JsonConvert.SerializeObject(departments);
+
+            var endpoint = GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT", EnvironmentVariableTarget.User);
+            var key = GetEnvironmentVariable("AZURE_OPENAI_API_KEY", EnvironmentVariableTarget.User);
+
+            var prompts = new List<string>();
+
+            prompts.Add("I want to create a team for my project which include these details: " + projectJson +
+                        ".\nHere are some additional context I want to add: " + teamFinderOpenAI.AdditionalContext +
+                        ".\nBecause I have a limited amount of tokens I will have to split the context for you so please remember all the data I send you and after I send you everything analyze the data and make a list of employees that meet the criteria. " +
+                        "Here is the data in my database which has 7 MongoDB collections: ");
+            prompts.Add("\nUsers: " + usersJson);
+            prompts.Add("\nProjects: " + projectsJson);
+            prompts.Add("\nProject teams: " + projectTeamsJson);
+            prompts.Add("\nSkills: " + skillsJson);
+            prompts.Add("\nTeam roles: " + teamRolesJson);
+            prompts.Add("\nSkill categories: " + skillCategoriesJson);
+            prompts.Add("\nDepartments: " + departmentsJson);
+            prompts.Add("\nI want the response to be a list of employees that fit these criteria and the response should be in JSON format and have this format: \n" + teamFinderResponse);
+
+            completion += prompts;
+
+            if (!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(key))
+            {
+                var client = new OpenAIClient(new Uri(endpoint), new AzureKeyCredential(key));
+
+
+
+                CompletionsOptions completionsOptions = new()
+                {
+                    DeploymentName = "atc-2024-gpt-35-turbo",
+                    Temperature = 0.1f,
+                    MaxTokens = 100,
+                    FrequencyPenalty = 1.0f,                    
+                };
+
+                Response<Completions> completionsResponse = client.GetCompletions(completionsOptions);
+
+                foreach (var prompt in prompts)
+                {
+                    // Set the prompt in the completion options
+                    completionsOptions.Prompts.Clear();
+                    completionsOptions.Prompts.Add(prompt);
+
+                    // Send the request to OpenAI and retrieve completions
+                    completionsResponse = client.GetCompletions(completionsOptions);
+
+                    // Append completion text to the result
+                    completion += completionsResponse.Value.Choices[0].Text;
+                }
+                
+                Console.WriteLine($"Chatbot: {completion}");
+            }
+
+            return completion;
         }
 
         public async Task<IEnumerable<User>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO)

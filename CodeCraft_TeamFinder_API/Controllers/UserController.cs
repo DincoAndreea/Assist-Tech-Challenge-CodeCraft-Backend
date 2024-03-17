@@ -154,6 +154,19 @@ namespace TeamFinderAPI.Controllers
             return Ok(users);
         }
 
+        [HttpPost("TeamFinderOpenAI")]
+        public async Task<ActionResult<string>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
+        {
+            if (!ObjectId.TryParse(teamFinderOpenAI.Project.Id, out _))
+            {
+                return BadRequest();
+            }
+
+            var users = await _userService.TeamFinderOpenAI(teamFinderOpenAI);
+
+            return Ok(users);
+        }
+
         [HttpGet("OrganizationAdmins")]
         public async Task<ActionResult<IEnumerable<User>>> GetOrganizationAdmins(string id)
         {

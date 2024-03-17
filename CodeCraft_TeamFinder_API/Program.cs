@@ -3,6 +3,7 @@ using CodeCraft_TeamFinder_Models;
 using CodeCraft_TeamFinder_Repository;
 using CodeCraft_TeamFinder_Services;
 using CodeCraft_TeamFinder_Services.Interfaces;
+using Hangfire;
 
 namespace CodeCraft_TeamFinder_API
 {

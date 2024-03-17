@@ -54,6 +54,12 @@ namespace CodeCraft_TeamFinder_Models
         public int WorkHours { get; set; }
     }
 
+    public class TeamFinderOpenAI
+    {
+        public Project Project { get; set; }
+        public string? AdditionalContext { get; set; }
+    }
+
     public class ProjectTeamMembersDTO
     {
         public List<User>? ProposedMembers { get; set; }
