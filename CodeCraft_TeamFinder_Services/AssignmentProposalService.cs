@@ -84,7 +84,7 @@ namespace CodeCraft_TeamFinder_Services
                 {
                     if (user.ProjectIDs == null)
                     {
-                        user.ProjectIDs = new List<string>() { assignmentProposal.ProjectID };
+                        user.ProjectIDs = new List<string>();
                     }
 
                     if (!user.ProjectIDs.Contains(assignmentProposal.ProjectID))
