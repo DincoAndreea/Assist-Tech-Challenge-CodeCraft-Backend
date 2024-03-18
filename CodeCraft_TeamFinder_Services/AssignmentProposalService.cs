@@ -145,7 +145,7 @@ namespace CodeCraft_TeamFinder_Services
                     if (manager != null)
                     {
                         string fromAddress = "dincoandreea@gmail.com";
-                        string toAddress = "dincoandreea@gmail.com";
+                        string toAddress = manager.Email;
                         string subject = "Assignment Proposal";
                         string body = "A member of your department has been proposed to be assigned to a project. Check the proposal in the app.";
 

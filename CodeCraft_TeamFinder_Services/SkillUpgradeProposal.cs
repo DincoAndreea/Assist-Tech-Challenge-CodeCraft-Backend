@@ -4,6 +4,8 @@ using Quartz;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -81,6 +83,23 @@ namespace CodeCraft_TeamFinder_Services
                                             user.Skills.Insert(index, skillUpgrade);
 
                                             await _userService.Value.Update(user);
+
+                                            string fromAddress = "dincoandreea@gmail.com";
+                                            string toAddress = user.Email;
+                                            string subject = "Skill Upgrade Proposal";
+                                            string body = $"Your skill has been upgraded due to your participation in the project. You can check it in the app.";
+
+                                            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                                            {
+                                                Port = 587,
+                                                Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
+                                                EnableSsl = true,
+                                            };
+
+                                            using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
+                                            {
+                                                smtpClient.Send(mailMessage);
+                                            }
                                         }
                                     }
                                     else
@@ -92,6 +111,23 @@ namespace CodeCraft_TeamFinder_Services
                                             user.Skills.Add(addSkill);
 
                                             await _userService.Value.Update(user);
+
+                                            string fromAddress = "dincoandreea@gmail.com";
+                                            string toAddress = user.Email;
+                                            string subject = "Skill Upgrade Proposal";
+                                            string body = $"A new skill was added to your profile due to your participation in the project. You can check it in the app.";
+
+                                            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                                            {
+                                                Port = 587,
+                                                Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
+                                                EnableSsl = true,
+                                            };
+
+                                            using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
+                                            {
+                                                smtpClient.Send(mailMessage);
+                                            }
                                         }
                                     }
                                 }
