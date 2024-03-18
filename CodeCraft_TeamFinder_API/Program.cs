@@ -4,6 +4,7 @@ using CodeCraft_TeamFinder_Repository;
 using CodeCraft_TeamFinder_Services;
 using CodeCraft_TeamFinder_Services.Interfaces;
 using Hangfire;
+using Quartz;
 
 namespace CodeCraft_TeamFinder_API
 {
@@ -35,6 +36,22 @@ namespace CodeCraft_TeamFinder_API
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddTransient(typeof(Lazy<>), typeof(LazilyResolved<>));
 
+            builder.Services.AddQuartz(configure =>
+            {
+                var jobKey = new JobKey(nameof(SkillUpgradeProposal));
+
+                configure
+                    .AddJob<SkillUpgradeProposal>(jobKey)
+                    .AddTrigger(
+                        trigger => trigger.ForJob(jobKey).WithSimpleSchedule(
+                            schedule => schedule.WithIntervalInSeconds(10).RepeatForever()));
+            });
+
+            builder.Services.AddQuartzHostedService(options =>
+            {
+                options.WaitForJobsToComplete = true;
+            });
+
 
             builder.Services.AddCors(options =>
             {
@@ -61,7 +78,6 @@ namespace CodeCraft_TeamFinder_API
             app.UseCors("cors-policy");
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

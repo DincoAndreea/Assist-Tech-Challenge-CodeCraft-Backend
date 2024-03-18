@@ -59,27 +59,33 @@ namespace CodeCraft_TeamFinder_Services
 
                     var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
 
-                    var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == id).FirstOrDefault();
-
-                    var teamRolesList = new List<string>();
-
-                    foreach (var teamRoleID in teamMember.TeamRoleIDs ??  Enumerable.Empty<string>())
+                    if (projectTeam != null)
                     {
-                        var teamRole = await _teamRoleService.Value.Get(teamRoleID);
+                        if (projectTeam.TeamMembers != null && projectTeam.TeamMembers.Count() > 0)
+                        {
+                            var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == id).FirstOrDefault();
 
-                        teamRolesList.Add(teamRole.Name);
-                    }
+                            var teamRolesList = new List<string>();
 
-                    ProjectInformation currentProjectInformation = new ProjectInformation { ProjectID = projectID, ProjectName = project.Name, TechnologyStack = project.TechnologyStack, Roles = teamRolesList };
+                            foreach (var teamRoleID in teamMember.TeamRoleIDs ?? Enumerable.Empty<string>())
+                            {
+                                var teamRole = await _teamRoleService.Value.Get(teamRoleID);
 
-                    if (teamMember.Active)
-                    {
-                        currentProjectsList.Add(currentProjectInformation);
-                    }
-                    else
-                    {
-                        pastProjectsList.Add(currentProjectInformation);
-                    }
+                                teamRolesList.Add(teamRole.Name);
+                            }
+
+                            ProjectInformation currentProjectInformation = new ProjectInformation { ProjectID = projectID, ProjectName = project.Name, TechnologyStack = project.TechnologyStack, Roles = teamRolesList };
+
+                            if (teamMember.Active)
+                            {
+                                currentProjectsList.Add(currentProjectInformation);
+                            }
+                            else
+                            {
+                                pastProjectsList.Add(currentProjectInformation);
+                            }
+                        }                       
+                    }                   
                 }
             }
 
