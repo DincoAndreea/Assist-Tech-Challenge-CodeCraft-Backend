@@ -60,7 +60,8 @@ namespace CodeCraft_TeamFinder_Services
                         {
                             var skillRequirements = projectDetails.SkillRequirements?.Select(x => x.SkillID).ToList();
 
-                            if ((projectDetails.StartDate - DateTime.Now).TotalHours == 5)
+                            //if(DifferenceInMonths(projectDetails.StartDate, DateTime.Now) % 3 == 0)
+                            if ((DateTime.Now - projectDetails.StartDate).TotalMinutes == 2)
                             {
                                 if (skillRequirements != null && skillRequirements.Count() > 0 && user.Skills != null && user.Skills.Count() > 0)
                                 {

@@ -87,36 +87,38 @@ namespace CodeCraft_TeamFinder_Services
                         user.ProjectIDs = new List<string>() { assignmentProposal.ProjectID };
                     }
 
-                    user.ProjectIDs.Add(assignmentProposal.ProjectID);
-
-                    bool userUpdated = await _userService.Value.Update(user);
-
-                    var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(assignmentProposal.ProjectID)).FirstOrDefault();
-
-                    if (projectTeam != null)
+                    if (!user.ProjectIDs.Contains(assignmentProposal.ProjectID))
                     {
-                        TeamMembers newTeamMember = new TeamMembers { UserID = assignmentProposal.UserID, TeamRoleIDs = assignmentProposal.TeamRoleIDs, Active = true, WorkHours = assignmentProposal.WorkHours };
+                        user.ProjectIDs.Add(assignmentProposal.ProjectID);
 
-                        if (projectTeam.TeamMembers == null)
+                        bool userUpdated = await _userService.Value.Update(user);
+
+                        var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(assignmentProposal.ProjectID)).FirstOrDefault();
+
+                        if (projectTeam != null)
                         {
-                            projectTeam.TeamMembers = new List<TeamMembers> { newTeamMember };
-                        }
+                            TeamMembers newTeamMember = new TeamMembers { UserID = assignmentProposal.UserID, TeamRoleIDs = assignmentProposal.TeamRoleIDs, Active = true, WorkHours = assignmentProposal.WorkHours };
 
-                        var userExists = projectTeam.TeamMembers.Select(x => x.UserID == assignmentProposal.UserID).FirstOrDefault();
-
-                        if (!userExists)
-                        {
-                            projectTeam.TeamMembers.Add(newTeamMember);
-
-                            bool projectTeamUpdated = await _projectTeamService.Value.Update(projectTeam);
-
-                            if (assignmentProposalUpdated && userUpdated && projectTeamUpdated)
+                            if (projectTeam.TeamMembers == null)
                             {
-                                return true;
+                                projectTeam.TeamMembers = new List<TeamMembers> { newTeamMember };
+                            }
+
+                            var userExists = projectTeam.TeamMembers.Select(x => x.UserID == assignmentProposal.UserID).FirstOrDefault();
+
+                            if (!userExists)
+                            {
+                                projectTeam.TeamMembers.Add(newTeamMember);
+
+                                bool projectTeamUpdated = await _projectTeamService.Value.Update(projectTeam);
+
+                                if (assignmentProposalUpdated && userUpdated && projectTeamUpdated)
+                                {
+                                    return true;
+                                }
                             }
                         }
-                        
-                    }
+                    }                                           
                 }
             }
 
