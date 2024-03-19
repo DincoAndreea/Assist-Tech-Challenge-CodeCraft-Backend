@@ -70,9 +70,9 @@ namespace CodeCraft_TeamFinder_Services
                         foreach (var skill in user.Skills)
                         {
                             string fromAddress = "dincoandreea@gmail.com";
-                            string toAddress = "dincoandreea@gmail.com";
+                            string toAddress = manager.Email;
                             string subject = "Skill Validation";
-                            string body = $"{user.Name} added a skill to their profile that need your approval. Check the request in the app.";
+                            string body = $"{user.Name} added a skill to their profile that needs your approval. Check the request in the app.";
 
                             SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
                             {

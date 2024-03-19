@@ -118,7 +118,36 @@ namespace CodeCraft_TeamFinder_Services
                                 }
                             }
                         }
-                    }                                           
+                    }
+                    else
+                    {
+                        var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(assignmentProposal.ProjectID)).FirstOrDefault();
+
+                        if (projectTeam != null && projectTeam.TeamMembers != null)
+                        {
+                            var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == assignmentProposal.UserID).FirstOrDefault();
+
+                            if (!teamMember.Active)
+                            {
+                                projectTeam.TeamMembers.Remove(teamMember);
+
+                                teamMember.Active = true;
+
+                                teamMember.WorkHours = assignmentProposal.WorkHours;
+
+                                projectTeam.TeamMembers.Add(teamMember);
+
+                                bool projectTeamUpdated = await _projectTeamService.Value.Update(projectTeam);
+
+                                if (assignmentProposalUpdated && projectTeamUpdated)
+                                {
+                                    return true;
+                                }
+
+                            }
+                        }
+
+                    }
                 }
             }
 

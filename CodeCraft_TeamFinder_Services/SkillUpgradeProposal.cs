@@ -85,22 +85,30 @@ namespace CodeCraft_TeamFinder_Services
 
                                             await _userService.Value.Update(user);
 
-                                            string fromAddress = "dincoandreea@gmail.com";
-                                            string toAddress = user.Email;
-                                            string subject = "Skill Upgrade Proposal";
-                                            string body = $"Your skill has been upgraded due to your participation in the project. You can check it in the app.";
-
-                                            SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                                            try
                                             {
-                                                Port = 587,
-                                                Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
-                                                EnableSsl = true,
-                                            };
+                                                string fromAddress = "dincoandreea@gmail.com";
+                                                string toAddress = user.Email;
+                                                string subject = "Skill Upgrade Proposal";
+                                                string body = $"Your skill has been upgraded due to your participation in the project. You can check it in the app.";
 
-                                            using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
-                                            {
-                                                smtpClient.Send(mailMessage);
+                                                SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                                                {
+                                                    Port = 587,
+                                                    Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
+                                                    EnableSsl = true,
+                                                };
+
+                                                using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
+                                                {
+                                                    smtpClient.Send(mailMessage);
+                                                }
                                             }
+                                            catch 
+                                            {
+
+                                            }
+                                            
                                         }
                                     }
                                     else
