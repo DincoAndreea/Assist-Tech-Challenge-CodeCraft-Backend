@@ -18,6 +18,7 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<TeamFinderResponseAPIDTO> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI);
         Task<IEnumerable<User>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO);
         Task<IEnumerable<User>> GetProjectManagers(string id);
+        Task<bool> RemoveSystemRole(RemoveSystemRoleDTO removeSystemRoleDTO);
         Task<IEnumerable<User>> GetEmployees(string id);
         Task<IEnumerable<User>> GetEmployeesWithoutDepartment(string id);
         Task<IEnumerable<User>> GetOrganizationAdmins(string id);

@@ -206,6 +206,24 @@ namespace TeamFinderAPI.Controllers
             return Ok(users);
         }
 
+        [HttpPost("RemoveSystemRole")]
+        public async Task<ActionResult> RemoveSystemRole(RemoveSystemRoleDTO removeSystemRoleDTO)
+        {
+            if (!ObjectId.TryParse(removeSystemRoleDTO.UserID, out _) || !ObjectId.TryParse(removeSystemRoleDTO.SystemRoleID, out _))
+            {
+                return BadRequest();
+            }
+
+            var success = await _userService.RemoveSystemRole(removeSystemRoleDTO);
+
+            if (success)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+
         [HttpGet("Employees")]
         public async Task<ActionResult<IEnumerable<User>>> GetEmployees(string id)
         {

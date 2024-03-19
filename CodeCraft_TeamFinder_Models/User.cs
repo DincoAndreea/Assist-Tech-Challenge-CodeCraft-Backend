@@ -29,7 +29,7 @@ namespace CodeCraft_TeamFinder_Models
         public List<string>? ProjectIDs { get; set; }
 
         [BsonElement("Status"), BsonRepresentation(BsonType.String)]
-        public string Status { get; set;}
+        public string Status { get; set; }
     }
     public class User : BaseClass
     {
@@ -80,7 +80,7 @@ namespace CodeCraft_TeamFinder_Models
     {
         public string Name { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }        
+        public string Password { get; set; }
         public string OrganizationName { get; set; }
         public string OrganizationAddress { get; set; }
     }
@@ -88,8 +88,14 @@ namespace CodeCraft_TeamFinder_Models
     public class RegisterEmployeeRequestDTO
     {
         public string Name { get; set; }
-        public string Email { get; set; }        
-        public string Password { get; set; }      
+        public string Email { get; set; }
+        public string Password { get; set; }
         public string OrganizationID { get; set; }
+    }
+
+    public class RemoveSystemRoleDTO
+    {
+        public string UserID { get; set; }
+        public string SystemRoleID { get; set; }
     }
 }

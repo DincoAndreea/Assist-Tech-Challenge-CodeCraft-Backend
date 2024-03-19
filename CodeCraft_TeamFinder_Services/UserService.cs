@@ -17,6 +17,7 @@ using MongoDB.Bson.IO;
 using Newtonsoft.Json;
 using System.Configuration;
 using Microsoft.Extensions.Configuration;
+using System.ComponentModel;
 
 namespace CodeCraft_TeamFinder_Services
 {
@@ -711,6 +712,28 @@ namespace CodeCraft_TeamFinder_Services
             }
 
             return projectManagersList;
+        }
+
+        public async Task<bool> RemoveSystemRole(RemoveSystemRoleDTO removeSystemRoleDTO)
+        {
+            var user = await _repository.Get(removeSystemRoleDTO.UserID);
+
+            if (user != null)
+            {
+                if (user.SystemRoleIDs != null)
+                {
+                    if (user.SystemRoleIDs.Contains(removeSystemRoleDTO.SystemRoleID))
+                    {
+                        user.SystemRoleIDs.Remove(removeSystemRoleDTO.SystemRoleID);
+
+                        bool userUpdated = await _repository.Update(user);
+
+                        return userUpdated;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public async Task<IEnumerable<User>> GetEmployees(string id)
