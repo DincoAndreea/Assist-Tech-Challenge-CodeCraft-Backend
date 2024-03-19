@@ -553,7 +553,7 @@ namespace CodeCraft_TeamFinder_Services
 
                 if (teamFinderRequestDTO.ProjectsCloseToFinish && teamFinderRequestDTO.Unavailable)
                 {
-                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
+                    return ((await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO))).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
                 }
 
                 return await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO);
@@ -577,7 +577,7 @@ namespace CodeCraft_TeamFinder_Services
             return await this.GetAvailableEmployees(teamFinderRequestDTO);
         }
 
-        public async Task<IEnumerable<TeamFinderResponseDTO>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
+        public async Task<TeamFinderResponseAPIDTO> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
         {
             var teamFinder = new List<TeamFinderResponseDTO>();
 
@@ -639,7 +639,7 @@ namespace CodeCraft_TeamFinder_Services
 
                 CompletionsOptions completionsOptions = new()
                 {
-                    Prompts = { $"Return a list of all users that have skills matching this technology stack: {technologyStack}. Also their skills should match these skill requirements: {skillProject}.\n{teamFinderOpenAI.AdditionalContext}\nPlease make sure to only give me a list with their names.\n\n\nUsers:\n{usersString}\n\nUsers output format:\\n[\\n  {{\\n     \\\"Name\\\": \\\"\\\"\\n  }}\\n]\\n\\nResponse:" },
+                    Prompts = { $"Return a list of all users that have skills matching this technology stack: {technologyStack}. Also their skills should match these skill requirements: {skillProject}.\n{teamFinderOpenAI.AdditionalContext}.\nPlease make sure to only give me a list with their names.\n\n\nUsers:\n{usersString}\n\nUsers output format:\\n[\\n  {{\\n     \\\"Name\\\": \\\"\\\"\\n  }}\\n]\\n\\nResponse:" },
                     DeploymentName = "atc-2024-gpt-35-turbo",
                     Temperature = (float)0,
                     MaxTokens = 454,
@@ -668,7 +668,9 @@ namespace CodeCraft_TeamFinder_Services
                 }
             }
 
-            return teamFinder;
+            TeamFinderResponseAPIDTO teamFinderResponseAPIDTO = new TeamFinderResponseAPIDTO { TeamFinderResponse = teamFinder, ChatGPTResponse = completion};
+
+            return teamFinderResponseAPIDTO;
         }
 
         public async Task<IEnumerable<User>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO)

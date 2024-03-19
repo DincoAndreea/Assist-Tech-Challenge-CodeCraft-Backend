@@ -72,8 +72,8 @@ namespace CodeCraft_TeamFinder_Models
 
     public class EmployeeProjectsDTO
     {
-        public List<ProjectInformation> CurrentProjects { get; set; }
-        public List<ProjectInformation> PastProjects { get; set; }
+        public List<Project> CurrentProjects { get; set; }
+        public List<Project> PastProjects { get; set; }
     }
 
     public struct TeamMembersList

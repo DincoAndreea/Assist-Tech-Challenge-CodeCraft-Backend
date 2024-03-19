@@ -54,6 +54,12 @@ namespace CodeCraft_TeamFinder_Models
         public int WorkHours { get; set; }
     }
 
+    public class TeamFinderResponseAPIDTO
+    {
+        public List<TeamFinderResponseDTO> TeamFinderResponse {  get; set; }
+        public string ChatGPTResponse { get; set; }
+    }
+
     public class TeamFinderOpenAI
     {
         public Project Project { get; set; }

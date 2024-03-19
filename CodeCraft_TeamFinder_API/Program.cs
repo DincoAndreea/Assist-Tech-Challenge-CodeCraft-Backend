@@ -44,7 +44,7 @@ namespace CodeCraft_TeamFinder_API
                     .AddJob<SkillUpgradeProposal>(jobKey)
                     .AddTrigger(
                         trigger => trigger.ForJob(jobKey).WithSimpleSchedule(
-                            schedule => schedule.WithIntervalInSeconds(10).RepeatForever()));
+                            schedule => schedule.WithIntervalInHours(2).RepeatForever()));
             });
 
             builder.Services.AddQuartzHostedService(options =>

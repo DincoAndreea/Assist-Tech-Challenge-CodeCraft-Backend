@@ -98,6 +98,19 @@ namespace TeamFinderAPI.Controllers
             return Ok(project);
         }
 
+        [HttpGet("ProjectManager/{id}")]
+        public async Task<ActionResult<IEnumerable<Project>>> GetProjectsByProjectManager(string id)
+        {
+            if (!ObjectId.TryParse(id, out _))
+            {
+                return BadRequest();
+            }
+
+            var projects = await _projectService.GetProjectsByProjectManager(id);
+
+            return Ok(projects);
+        }
+
         [HttpPost]
         public async Task<ActionResult> CreateProject(Project project)
         {
