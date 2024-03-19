@@ -4,6 +4,8 @@ using CodeCraft_TeamFinder_Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,11 +15,15 @@ namespace CodeCraft_TeamFinder_Services
     {
         private readonly IRepository<DeallocationProposal> _repository;
         private readonly Lazy<IUserService> _userService;
+        private readonly Lazy<IProjectTeamService> _projectTeamService;
+        private readonly Lazy<IDepartmentService> _departmentService;
 
-        public DeallocationProposalService(IRepository<DeallocationProposal> repository, Lazy<IUserService> userService)
+        public DeallocationProposalService(IRepository<DeallocationProposal> repository, Lazy<IUserService> userService, Lazy<IProjectTeamService> projectTeamService, Lazy<IDepartmentService> departmentService)
         {
             _repository = repository;
             _userService = userService;
+            _projectTeamService = projectTeamService;
+            _departmentService = departmentService;
         }
 
         public async Task<DeallocationProposal> Get(string id)
@@ -62,6 +68,44 @@ namespace CodeCraft_TeamFinder_Services
             return await _repository.Find("ProjectID", id);
         }
 
+        public async Task<bool> AcceptDealllocationProposal(string id)
+        {
+            var deallocationProposal = await _repository.Get(id);
+
+            if (deallocationProposal != null)
+            {
+                deallocationProposal.Accepted = true;
+
+                bool deallocationProposalUpdated = await _repository.Update(deallocationProposal);
+
+                var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(deallocationProposal.ProjectID)).FirstOrDefault();
+
+                if (projectTeam != null)
+                {
+                    if (projectTeam.TeamMembers != null && projectTeam.TeamMembers.Count > 0)
+                    {
+                        var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == deallocationProposal.UserID).FirstOrDefault();
+
+                        projectTeam.TeamMembers.Remove(teamMember);
+
+                        teamMember.Active = false;
+
+                        projectTeam.TeamMembers.Add(teamMember);
+
+                        bool projectTeamUpdated = await _projectTeamService.Value.Update(projectTeam);
+
+                        if (projectTeamUpdated && deallocationProposalUpdated)
+                        {
+                            return true;
+                        }
+                    }                    
+                }
+            }
+
+            return false;
+        }
+
+
         public async Task<IEnumerable<DeallocationProposal>> Find(string fieldName, string fieldValue)
         {
             return await _repository.Find(fieldName, fieldValue);
@@ -69,7 +113,41 @@ namespace CodeCraft_TeamFinder_Services
 
         public async Task<bool> Create(DeallocationProposal deallocationProposal)
         {
-            return await _repository.Create(deallocationProposal);
+            bool success = await _repository.Create(deallocationProposal);
+
+            var user = await _userService.Value.Get(deallocationProposal.UserID);
+
+            if (user.DepartmentID != null && success)
+            {
+                var department = await _departmentService.Value.Get(user.DepartmentID);
+
+                if (department != null)
+                {
+                    var manager = await _userService.Value.Get(department.ManagerID);
+
+                    if (manager != null)
+                    {
+                        string fromAddress = "dincoandreea@gmail.com";
+                        string toAddress = manager.Email;
+                        string subject = "Deallocation Proposal";
+                        string body = "A member of your department has been proposed to be deallocated from a project. Check the proposal in the app.";
+
+                        SmtpClient smtpClient = new SmtpClient("smtp.gmail.com")
+                        {
+                            Port = 587,
+                            Credentials = new NetworkCredential(fromAddress, "epmk ojno vjgh swgn "),
+                            EnableSsl = true,
+                        };
+
+                        using (MailMessage mailMessage = new MailMessage(fromAddress, toAddress, subject, body))
+                        {
+                            smtpClient.Send(mailMessage);
+                        }
+                    }
+                }
+            }
+
+            return success;
         }
 
         public async Task<bool> Update(DeallocationProposal deallocationProposal)

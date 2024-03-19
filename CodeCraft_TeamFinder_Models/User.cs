@@ -14,10 +14,10 @@ namespace CodeCraft_TeamFinder_Models
         public string SkillID { get; set; }
 
         [BsonElement("Level"), BsonRepresentation(BsonType.String)]
-        public string Level { get; set; }
+        public string? Level { get; set; }
 
         [BsonElement("Experience"), BsonRepresentation(BsonType.String)]
-        public string Experience { get; set; }
+        public string? Experience { get; set; }
 
         [BsonElement("TrainingTitle"), BsonRepresentation(BsonType.String)]
         public string? TrainingTitle { get; set; }
@@ -26,7 +26,7 @@ namespace CodeCraft_TeamFinder_Models
         public string? TrainingDescription { get; set; }
 
         [BsonElement("ProjectIDs"), BsonRepresentation(BsonType.ObjectId)]
-        public string[]? ProjectIDs { get; set; }
+        public List<string>? ProjectIDs { get; set; }
 
         [BsonElement("Status"), BsonRepresentation(BsonType.String)]
         public string Status { get; set;}
@@ -50,13 +50,13 @@ namespace CodeCraft_TeamFinder_Models
         public string? DepartmentID { get; set; }
 
         [BsonElement("ProjectIDs"), BsonRepresentation(BsonType.ObjectId)]
-        public string[]? ProjectIDs { get; set; }
+        public List<string>? ProjectIDs { get; set; }
 
         [BsonElement("Skills")]
-        public Skills[]? Skills { get; set; }
+        public List<Skills>? Skills { get; set; }
 
         [BsonElement("SystemRoleIDs"), BsonRepresentation(BsonType.ObjectId)]
-        public string[]? SystemRoleIDs { get; set; }
+        public List<string>? SystemRoleIDs { get; set; }
     }
 
     public class LoginRequestDTO
@@ -71,9 +71,9 @@ namespace CodeCraft_TeamFinder_Models
         public string Name { get; set; }
         public string OrganizationID { get; set; }
         public string? DepartmentID { get; set; }
-        public string[]? ProjectIDs { get; set; }
-        public Skills[]? Skills { get; set; }
-        public string[]? SystemRoleIDs { get; set; }
+        public List<string>? ProjectIDs { get; set; }
+        public List<Skills>? Skills { get; set; }
+        public List<string>? SystemRoleIDs { get; set; }
     }
 
     public class RegisterAdminRequestDTO

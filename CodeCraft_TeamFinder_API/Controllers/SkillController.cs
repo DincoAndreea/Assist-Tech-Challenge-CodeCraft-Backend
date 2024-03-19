@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using System.Data;
 using CodeCraft_TeamFinder_Services.Interfaces;
 using MongoDB.Bson;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace TeamFinderAPI.Controllers
 {
@@ -112,6 +113,32 @@ namespace TeamFinderAPI.Controllers
             var skillStatistics = await _skillService.GetSkillStatistics(skillStatisticsRequestDTO);
 
             return Ok(skillStatistics);
+        }
+
+        [HttpGet("SkillValidationProposals")]
+        public async Task<ActionResult<IEnumerable<SkillValidationDTO>>> GetSkillStatistics()
+        {
+            var skillValidationProposals = await _skillService.GetSkillValidationProposals();
+
+            return Ok(skillValidationProposals);
+        }
+
+        [HttpPost("AcceptOrRejectSkillValidation")]
+        public async Task<ActionResult> AcceptSkillValidation(SkillValidationStatusDTO skillValidationStatusDTO)
+        {
+            if (!ObjectId.TryParse(skillValidationStatusDTO.SkillID, out _) || !ObjectId.TryParse(skillValidationStatusDTO.EmployeeID, out _))
+            {
+                return BadRequest();
+            }
+
+            var success = await _skillService.AcceptSkillValidation(skillValidationStatusDTO);
+
+            if (!success)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
 
         [HttpPost]

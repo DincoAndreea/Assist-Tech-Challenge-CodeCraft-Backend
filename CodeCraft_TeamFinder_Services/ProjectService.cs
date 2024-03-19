@@ -15,13 +15,17 @@ namespace CodeCraft_TeamFinder_Services
         private readonly Lazy<IUserService> _userService;
         private readonly Lazy<IProjectTeamService> _projectTeamService;
         private readonly Lazy<ITeamRoleService> _teamRoleService;
+        private readonly Lazy<ISkillService> _skillService;
+        private readonly Lazy<ISystemRoleService> _systemRoleService;
 
-        public ProjectService(IRepository<Project> repository, Lazy<IUserService> userService, Lazy<IProjectTeamService> projectTeamService, Lazy<ITeamRoleService> teamRoleService)
+        public ProjectService(IRepository<Project> repository, Lazy<IUserService> userService, Lazy<IProjectTeamService> projectTeamService, Lazy<ITeamRoleService> teamRoleService, Lazy<ISkillService> skillService, Lazy<ISystemRoleService> systemRoleService)
         {
             _repository = repository;
             _userService = userService;
             _projectTeamService = projectTeamService;
             _teamRoleService = teamRoleService;
+            _skillService = skillService;
+            _systemRoleService = systemRoleService;
         }
 
         public async Task<Project> Get(string id)
@@ -55,27 +59,33 @@ namespace CodeCraft_TeamFinder_Services
 
                     var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
 
-                    var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == id).FirstOrDefault();
-
-                    var teamRolesList = new List<string>();
-
-                    foreach (var teamRoleID in teamMember.TeamRoleIDs ??  Enumerable.Empty<string>())
+                    if (projectTeam != null)
                     {
-                        var teamRole = await _teamRoleService.Value.Get(teamRoleID);
+                        if (projectTeam.TeamMembers != null && projectTeam.TeamMembers.Count() > 0)
+                        {
+                            var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == id).FirstOrDefault();
 
-                        teamRolesList.Add(teamRole.Name);
-                    }
+                            var teamRolesList = new List<string>();
 
-                    ProjectInformation currentProjectInformation = new ProjectInformation { ProjectID = projectID, ProjectName = project.Name, TechnologyStack = project.TechnologyStack, Roles = teamRolesList.ToArray() };
+                            foreach (var teamRoleID in teamMember.TeamRoleIDs ?? Enumerable.Empty<string>())
+                            {
+                                var teamRole = await _teamRoleService.Value.Get(teamRoleID);
 
-                    if (teamMember.Active)
-                    {
-                        currentProjectsList.Add(currentProjectInformation);
-                    }
-                    else
-                    {
-                        pastProjectsList.Add(currentProjectInformation);
-                    }
+                                teamRolesList.Add(teamRole.Name);
+                            }
+
+                            ProjectInformation currentProjectInformation = new ProjectInformation { ProjectID = projectID, ProjectName = project.Name, TechnologyStack = project.TechnologyStack, Roles = teamRolesList };
+
+                            if (teamMember.Active)
+                            {
+                                currentProjectsList.Add(currentProjectInformation);
+                            }
+                            else
+                            {
+                                pastProjectsList.Add(currentProjectInformation);
+                            }
+                        }                       
+                    }                   
                 }
             }
 
@@ -129,7 +139,13 @@ namespace CodeCraft_TeamFinder_Services
 
         public async Task<bool> Create(Project project)
         {
-            return await _repository.Create(project);
+            var successProject = await _repository.Create(project);
+
+            ProjectTeam projectTeam = new ProjectTeam { ProjectID = project.Id, TeamMembers = new List<TeamMembers>() };
+
+            var successprojectTeam = await _projectTeamService.Value.Create(projectTeam);
+
+            return successProject && successprojectTeam;
         }
 
         public async Task<bool> Update(Project project)

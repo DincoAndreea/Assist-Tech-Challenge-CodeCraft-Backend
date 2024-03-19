@@ -47,10 +47,10 @@ namespace CodeCraft_TeamFinder_Models
         public string Description { get; set; }
 
         [BsonElement("SkillRequirements")]
-        public SkillRequirements[]? SkillRequirements { get; set; }
+        public List<SkillRequirements>? SkillRequirements { get; set; }
 
         [BsonElement("TechnologyStack"), BsonRepresentation(BsonType.String)]
-        public string[] TechnologyStack { get; set; }
+        public List<string> TechnologyStack { get; set; }
 
         [BsonElement("ProjectManagerID"), BsonRepresentation(BsonType.ObjectId)]
         public string ProjectManagerID { get; set; }
@@ -59,27 +59,27 @@ namespace CodeCraft_TeamFinder_Models
         public string OrganizationID { get; set; }
 
         [BsonElement("ProjectRoles")]
-        public ProjectRoles[] ProjectRoles { get; set; }
+        public List<ProjectRoles> ProjectRoles { get; set; }
     }
 
     public struct ProjectInformation
     {
         public string ProjectID { get; set; }
         public string ProjectName { get; set; }
-        public string[] Roles { get; set; }
-        public string[] TechnologyStack { get; set; }
+        public List<string> Roles { get; set; }
+        public List<string> TechnologyStack { get; set; }
     }
 
     public class EmployeeProjectsDTO
     {
-        public IEnumerable<ProjectInformation> CurrentProjects { get; set; }
-        public IEnumerable<ProjectInformation> PastProjects { get; set; }
+        public List<ProjectInformation> CurrentProjects { get; set; }
+        public List<ProjectInformation> PastProjects { get; set; }
     }
 
     public struct TeamMembersList
     {
-        public IEnumerable<User> CurrentMembers { get; set; }
-        public IEnumerable<User> PastMembers { get; set; }
+        public List<User> CurrentMembers { get; set; }
+        public List<User> PastMembers { get; set; }
     }
 
     public class ProjectDetailsDTO : BaseClass
@@ -90,7 +90,7 @@ namespace CodeCraft_TeamFinder_Models
         public DateTime? DeadlineDate { get; set; }
         public string Status { get; set; }
         public string Description { get; set; }
-        public string[] TechnologyStack { get; set; }
+        public List<string> TechnologyStack { get; set; }
         public TeamMembersList TeamMembers { get; set; }
     }
 

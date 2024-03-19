@@ -77,7 +77,7 @@ namespace CodeCraft_TeamFinder_Services
 
             bool updatedDepartment = await _repository.Update(departmentUpdate);
 
-            managerUpdate.DepartmentID = assignDepartmentManagerDTO.ManagerID;
+            managerUpdate.DepartmentID = assignDepartmentManagerDTO.DepartmentID;
 
             bool updatedManager = await _userService.Value.Update(managerUpdate);
 

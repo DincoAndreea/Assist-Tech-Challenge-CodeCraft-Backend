@@ -11,6 +11,7 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<IEnumerable<ProjectTeam>> GetAll();
         Task<IEnumerable<ProjectTeam>> GetProjectTeamByProject(string id);
         Task<ProjectTeamMembersDTO> GetProjectTeamMembers(string id);
+        Task<int> GetWorkHours(string id);
         Task<bool> Update(ProjectTeam projectTeam);
     }
 }
