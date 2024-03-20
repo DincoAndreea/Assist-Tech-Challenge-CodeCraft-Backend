@@ -81,6 +81,46 @@ namespace CodeCraft_TeamFinder_Services
             return currentProjectsList.Concat(pastProjectsList);
         }
 
+        public async Task<EmployeeProjectsDTO> GetEmployeeProjectsLists(string id)
+        {
+            var currentProjectsList = new List<Project>();
+
+            var pastProjectsList = new List<Project>();
+
+            var projectIDs = (await _userService.Value.Get(id)).ProjectIDs;
+
+            if (projectIDs != null)
+            {
+                foreach (var projectID in projectIDs)
+                {
+                    var project = await _repository.Get(projectID);
+
+                    var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
+
+                    if (projectTeam != null)
+                    {
+                        if (projectTeam.TeamMembers != null && projectTeam.TeamMembers.Count() > 0)
+                        {
+                            var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == id).FirstOrDefault();
+
+                            if (teamMember.Active)
+                            {
+                                currentProjectsList.Add(project);
+                            }
+                            else
+                            {
+                                pastProjectsList.Add(project);
+                            }
+                        }
+                    }
+                }
+            }
+
+            EmployeeProjectsDTO employeeProjectsDTO = new EmployeeProjectsDTO { CurrentProjects = currentProjectsList, PastProjects = pastProjectsList };
+
+            return employeeProjectsDTO;
+        }
+
         public async Task<IEnumerable<Project>> GetDepartmentProjects(string id)
         {
             var departmentProjects = new List<Project>();  
@@ -89,7 +129,7 @@ namespace CodeCraft_TeamFinder_Services
 
             foreach (var user in usersByDepartment ?? Enumerable.Empty<User>())
             {
-                var projectInformations = (await GetEmployeeProjects(user.Id)).CurrentProjects;
+                var projectInformations = (await GetEmployeeProjectsLists(user.Id)).CurrentProjects;
 
                 foreach (var projectInformation in projectInformations ?? Enumerable.Empty<Project>())
                 {
