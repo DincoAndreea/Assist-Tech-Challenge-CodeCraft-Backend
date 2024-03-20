@@ -43,7 +43,7 @@ namespace CodeCraft_TeamFinder_Services
             return await _repository.Find("OrganizationID", id);
         }
 
-        public async Task<EmployeeProjectsDTO> GetEmployeeProjects(string id)
+        public async Task<IEnumerable<Project>> GetEmployeeProjects(string id)
         {
             var currentProjectsList = new List<Project>();
 
@@ -78,9 +78,7 @@ namespace CodeCraft_TeamFinder_Services
                 }
             }
 
-            EmployeeProjectsDTO employeeProjectsDTO = new EmployeeProjectsDTO { CurrentProjects = currentProjectsList, PastProjects = pastProjectsList };
-
-            return employeeProjectsDTO;
+            return currentProjectsList.Concat(pastProjectsList);
         }
 
         public async Task<IEnumerable<Project>> GetDepartmentProjects(string id)

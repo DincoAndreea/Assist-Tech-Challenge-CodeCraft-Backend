@@ -60,7 +60,7 @@ namespace TeamFinderAPI.Controllers
         }
 
         [HttpGet("EmployeeProjects")]
-        public async Task<ActionResult<EmployeeProjectsDTO>> GetEmployeeProjects(string id)
+        public async Task<ActionResult<IEnumerable<Project>>> GetEmployeeProjects(string id)
         {
             if (!ObjectId.TryParse(id, out _))
             {
@@ -73,7 +73,7 @@ namespace TeamFinderAPI.Controllers
         }
 
         [HttpGet("DepartmentProjects")]
-        public async Task<ActionResult<IEnumerable<DepartmentProjectDTO>>> GetDepartmentProjects(string id)
+        public async Task<ActionResult<IEnumerable<Project>>> GetDepartmentProjects(string id)
         {
             if (!ObjectId.TryParse(id, out _))
             {
