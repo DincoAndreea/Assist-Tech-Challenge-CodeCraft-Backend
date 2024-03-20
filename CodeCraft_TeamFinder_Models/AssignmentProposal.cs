@@ -23,6 +23,9 @@ namespace CodeCraft_TeamFinder_Models
         [BsonElement("TeamRoleIDs"), BsonRepresentation(BsonType.ObjectId)]
         public List<string> TeamRoleIDs { get; set; }
 
+        [BsonElement("Comments"), BsonRepresentation(BsonType.String)]
+        public string? Comments { get; set; }
+
         [BsonElement("Accepted"), BsonRepresentation(BsonType.Boolean)]
         public bool Accepted { get; set; }
     }

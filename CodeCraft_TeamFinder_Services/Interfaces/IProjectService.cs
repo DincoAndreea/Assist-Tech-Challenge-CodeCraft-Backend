@@ -10,9 +10,11 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<Project> Get(string id);
         Task<IEnumerable<Project>> GetAll();
         Task<IEnumerable<Project>> GetProjectsByOrganization(string id);
-        Task<EmployeeProjectsDTO> GetEmployeeProjects(string id);
-        Task<IEnumerable<DepartmentProjectDTO>> GetDepartmentProjects(string id);
+        Task<IEnumerable<Project>> GetEmployeeProjects(string id);
+        Task<EmployeeProjectsDTO> GetEmployeeProjectsLists(string id);
+        Task<IEnumerable<Project>> GetDepartmentProjects(string id);
         Task<ProjectDetailsDTO> GetProjectDetails(string id);
+        Task<IEnumerable<Project>> GetProjectsByProjectManager(string id);
         Task<bool> Update(Project project);
     }
 }

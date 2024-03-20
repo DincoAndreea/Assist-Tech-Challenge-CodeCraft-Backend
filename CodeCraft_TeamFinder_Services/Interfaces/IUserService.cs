@@ -15,9 +15,10 @@ namespace CodeCraft_TeamFinder_Services.Interfaces
         Task<IEnumerable<User>> GetUsersByProject(string id);
         Task<IEnumerable<User>> GetUsersBySkill(string id);
         Task<IEnumerable<TeamFinderResponseDTO>> TeamFinder(TeamFinderRequestDTO teamFinderRequestDTO);
-        Task<IEnumerable<TeamFinderResponseDTO>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI);
+        Task<TeamFinderResponseAPIDTO> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI);
         Task<IEnumerable<User>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO);
         Task<IEnumerable<User>> GetProjectManagers(string id);
+        Task<bool> RemoveSystemRole(RemoveSystemRoleDTO removeSystemRoleDTO);
         Task<IEnumerable<User>> GetEmployees(string id);
         Task<IEnumerable<User>> GetEmployeesWithoutDepartment(string id);
         Task<IEnumerable<User>> GetOrganizationAdmins(string id);

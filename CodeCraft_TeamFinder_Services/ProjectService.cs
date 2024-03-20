@@ -43,11 +43,11 @@ namespace CodeCraft_TeamFinder_Services
             return await _repository.Find("OrganizationID", id);
         }
 
-        public async Task<EmployeeProjectsDTO> GetEmployeeProjects(string id)
+        public async Task<IEnumerable<Project>> GetEmployeeProjects(string id)
         {
-            var currentProjectsList = new List<ProjectInformation>();
+            var currentProjectsList = new List<Project>();
 
-            var pastProjectsList = new List<ProjectInformation>();
+            var pastProjectsList = new List<Project>();
 
             var projectIDs = (await _userService.Value.Get(id)).ProjectIDs;
 
@@ -65,27 +65,54 @@ namespace CodeCraft_TeamFinder_Services
                         {
                             var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == id).FirstOrDefault();
 
-                            var teamRolesList = new List<string>();
-
-                            foreach (var teamRoleID in teamMember.TeamRoleIDs ?? Enumerable.Empty<string>())
-                            {
-                                var teamRole = await _teamRoleService.Value.Get(teamRoleID);
-
-                                teamRolesList.Add(teamRole.Name);
-                            }
-
-                            ProjectInformation currentProjectInformation = new ProjectInformation { ProjectID = projectID, ProjectName = project.Name, TechnologyStack = project.TechnologyStack, Roles = teamRolesList };
-
                             if (teamMember.Active)
                             {
-                                currentProjectsList.Add(currentProjectInformation);
+                                currentProjectsList.Add(project);
                             }
                             else
                             {
-                                pastProjectsList.Add(currentProjectInformation);
+                                pastProjectsList.Add(project);
                             }
                         }                       
                     }                   
+                }
+            }
+
+            return currentProjectsList.Concat(pastProjectsList);
+        }
+
+        public async Task<EmployeeProjectsDTO> GetEmployeeProjectsLists(string id)
+        {
+            var currentProjectsList = new List<Project>();
+
+            var pastProjectsList = new List<Project>();
+
+            var projectIDs = (await _userService.Value.Get(id)).ProjectIDs;
+
+            if (projectIDs != null)
+            {
+                foreach (var projectID in projectIDs)
+                {
+                    var project = await _repository.Get(projectID);
+
+                    var projectTeam = (await _projectTeamService.Value.GetProjectTeamByProject(projectID)).FirstOrDefault();
+
+                    if (projectTeam != null)
+                    {
+                        if (projectTeam.TeamMembers != null && projectTeam.TeamMembers.Count() > 0)
+                        {
+                            var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == id).FirstOrDefault();
+
+                            if (teamMember.Active)
+                            {
+                                currentProjectsList.Add(project);
+                            }
+                            else
+                            {
+                                pastProjectsList.Add(project);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -94,25 +121,19 @@ namespace CodeCraft_TeamFinder_Services
             return employeeProjectsDTO;
         }
 
-        public async Task<IEnumerable<DepartmentProjectDTO>> GetDepartmentProjects(string id)
+        public async Task<IEnumerable<Project>> GetDepartmentProjects(string id)
         {
-            var departmentProjects = new List<DepartmentProjectDTO>();  
+            var departmentProjects = new List<Project>();  
 
             var usersByDepartment = await _userService.Value.GetUsersByDepartment(id);
 
             foreach (var user in usersByDepartment ?? Enumerable.Empty<User>())
             {
-                var projectInformations = (await GetEmployeeProjects(user.Id)).CurrentProjects;
+                var projectInformations = (await GetEmployeeProjectsLists(user.Id)).CurrentProjects;
 
-                foreach (var projectInformation in projectInformations)
+                foreach (var projectInformation in projectInformations ?? Enumerable.Empty<Project>())
                 {
-                    var projectTeam = await _projectTeamService.Value.GetProjectTeamMembers(projectInformation.ProjectID);
-
-                    var project = await _repository.Get(projectInformation.ProjectID);
-
-                    DepartmentProjectDTO departmentProjectDTO = new DepartmentProjectDTO { Name = project.Name, DeadlineDate = project.DeadlineDate, Status = project.Status, TeamMembers = projectTeam };
-
-                    departmentProjects.Add(departmentProjectDTO);
+                    departmentProjects.Add(projectInformation);
                 }
             }
 
@@ -130,6 +151,11 @@ namespace CodeCraft_TeamFinder_Services
             ProjectDetailsDTO projectDetailsDTO = new ProjectDetailsDTO { Name = project.Name, Period = project.Period, StartDate = project.StartDate, DeadlineDate = project.DeadlineDate, Status = project.Status, Description = project.Description, TechnologyStack = project.TechnologyStack, TeamMembers = teamMembersList };
 
             return projectDetailsDTO;
+        }
+
+        public async Task<IEnumerable<Project>> GetProjectsByProjectManager(string id)
+        {
+            return await _repository.Find("ProjectManagerID", id);
         }
 
         public async Task<IEnumerable<Project>> Find(string fieldName, string fieldValue)

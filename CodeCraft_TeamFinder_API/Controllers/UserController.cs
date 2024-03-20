@@ -155,7 +155,7 @@ namespace TeamFinderAPI.Controllers
         }
 
         [HttpPost("TeamFinderOpenAI")]
-        public async Task<ActionResult<IEnumerable<TeamFinderResponseDTO>>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
+        public async Task<ActionResult<TeamFinderResponseAPIDTO>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
         {
             if (!ObjectId.TryParse(teamFinderOpenAI.Project.Id, out _))
             {
@@ -204,6 +204,24 @@ namespace TeamFinderAPI.Controllers
             IEnumerable<User> users = await _userService.GetProjectManagers(id);
 
             return Ok(users);
+        }
+
+        [HttpPost("RemoveSystemRole")]
+        public async Task<ActionResult> RemoveSystemRole(RemoveSystemRoleDTO removeSystemRoleDTO)
+        {
+            if (!ObjectId.TryParse(removeSystemRoleDTO.UserID, out _) || !ObjectId.TryParse(removeSystemRoleDTO.SystemRoleID, out _))
+            {
+                return BadRequest();
+            }
+
+            var success = await _userService.RemoveSystemRole(removeSystemRoleDTO);
+
+            if (success)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
         }
 
         [HttpGet("Employees")]

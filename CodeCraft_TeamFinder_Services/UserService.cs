@@ -15,6 +15,9 @@ using Azure.AI.OpenAI;
 using Azure;
 using MongoDB.Bson.IO;
 using Newtonsoft.Json;
+using System.Configuration;
+using Microsoft.Extensions.Configuration;
+using System.ComponentModel;
 
 namespace CodeCraft_TeamFinder_Services
 {
@@ -29,8 +32,9 @@ namespace CodeCraft_TeamFinder_Services
         private readonly Lazy<IDepartmentService> _departmentService;
         private readonly Lazy<ITeamRoleService> _teamRoleService;
         private readonly Lazy<ISkillCategoryService> _skillCategoryService;
+        public readonly IConfiguration _configuration;
 
-        public UserService(IRepository<User> repository, Lazy<IOrganizationService> organizationService, Lazy<ISystemRoleService> systemRoleService, Lazy<IProjectTeamService> projectTeamService, Lazy<IProjectService> projectService, Lazy<ISkillService> skillService, Lazy<IDepartmentService> departmentService, Lazy<ITeamRoleService> teamRoleService, Lazy<ISkillCategoryService> skillCategoryService)
+        public UserService(IRepository<User> repository, Lazy<IOrganizationService> organizationService, Lazy<ISystemRoleService> systemRoleService, Lazy<IProjectTeamService> projectTeamService, Lazy<IProjectService> projectService, Lazy<ISkillService> skillService, Lazy<IDepartmentService> departmentService, Lazy<ITeamRoleService> teamRoleService, Lazy<ISkillCategoryService> skillCategoryService, IConfiguration configuration)
         {
             _repository = repository;
             _organizationService = organizationService;
@@ -41,6 +45,7 @@ namespace CodeCraft_TeamFinder_Services
             _departmentService = departmentService;
             _teamRoleService = teamRoleService;
             _skillCategoryService = skillCategoryService;
+            _configuration = configuration;
         }
 
         public async Task<User> Get(string id)
@@ -553,7 +558,7 @@ namespace CodeCraft_TeamFinder_Services
 
                 if (teamFinderRequestDTO.ProjectsCloseToFinish && teamFinderRequestDTO.Unavailable)
                 {
-                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
+                    return ((await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO))).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
                 }
 
                 return await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO);
@@ -577,7 +582,7 @@ namespace CodeCraft_TeamFinder_Services
             return await this.GetAvailableEmployees(teamFinderRequestDTO);
         }
 
-        public async Task<IEnumerable<TeamFinderResponseDTO>> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
+        public async Task<TeamFinderResponseAPIDTO> TeamFinderOpenAI(TeamFinderOpenAI teamFinderOpenAI)
         {
             var teamFinder = new List<TeamFinderResponseDTO>();
 
@@ -630,45 +635,44 @@ namespace CodeCraft_TeamFinder_Services
                 }
             }
 
-            var endpoint = GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT", EnvironmentVariableTarget.User);
-            var key = GetEnvironmentVariable("AZURE_OPENAI_API_KEY", EnvironmentVariableTarget.User);
 
-            if (!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(key))
+
+            var client = new OpenAIClient(new Uri("https://atc-2024-openai.openai.azure.com/"), new AzureKeyCredential("4de2c734d831446898e94312cd463c80"));
+
+            CompletionsOptions completionsOptions = new()
             {
-                var client = new OpenAIClient(new Uri(endpoint), new AzureKeyCredential(key));
+                Prompts = { $"Return a list of all users that have skills matching this technology stack: {technologyStack}. Also their skills should match these skill requirements: {skillProject}.\n{teamFinderOpenAI.AdditionalContext}.\nPlease make sure to only give me a list with their names.\n\n\nUsers:\n{usersString}\n\nUsers output format:\\n[\\n  {{\\n     \\\"Name\\\": \\\"\\\"\\n  }}\\n]\\n\\nResponse:" },
+                DeploymentName = "atc-2024-gpt-35-turbo",
+                Temperature = (float)0,
+                MaxTokens = 454,
+                StopSequences = { "]" },
+                NucleusSamplingFactor = (float)1,
+                FrequencyPenalty = (float)0,
+                PresencePenalty = (float)0
+            };
 
-                CompletionsOptions completionsOptions = new()
+            Response<Completions> completionsResponse = client.GetCompletions(completionsOptions);
+
+            completion = completionsResponse.Value.Choices[0].Text;
+
+            var names = users.Select(x => x.Name);
+
+            foreach (var user in users)
+            {
+                if (completion.Contains(user.Name))
                 {
-                    Prompts = { $"Return a list of all users that have skills matching this technology stack: {technologyStack}. Also their skills should match these skill requirements: {skillProject}.\n{teamFinderOpenAI.AdditionalContext}\nPlease make sure to only give me a list with their names.\n\n\nUsers:\n{usersString}\n\nUsers output format:\\n[\\n  {{\\n     \\\"Name\\\": \\\"\\\"\\n  }}\\n]\\n\\nResponse:" },
-                    DeploymentName = "atc-2024-gpt-35-turbo",
-                    Temperature = (float)0,
-                    MaxTokens = 454,
-                    StopSequences = { "]" },
-                    NucleusSamplingFactor = (float)1,
-                    FrequencyPenalty = (float)0,
-                    PresencePenalty = (float)0
-                };
+                    int workHours = await _projectTeamService.Value.GetWorkHours(user.Id);
 
-                Response<Completions> completionsResponse = client.GetCompletions(completionsOptions);
+                    TeamFinderResponseDTO teamFinderResponse = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
 
-                completion = completionsResponse.Value.Choices[0].Text;
-
-                var names = users.Select(x => x.Name);
-
-                foreach (var user in users)
-                {
-                    if (completion.Contains(user.Name))
-                    {
-                        int workHours = await _projectTeamService.Value.GetWorkHours(user.Id);
-
-                        TeamFinderResponseDTO teamFinderResponse = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
-
-                        teamFinder.Add(teamFinderResponse);
-                    }
+                    teamFinder.Add(teamFinderResponse);
                 }
             }
 
-            return teamFinder;
+
+            TeamFinderResponseAPIDTO teamFinderResponseAPIDTO = new TeamFinderResponseAPIDTO { TeamFinderResponse = teamFinder, ChatGPTResponse = completion };
+
+            return teamFinderResponseAPIDTO;
         }
 
         public async Task<IEnumerable<User>> GetDepartmentManagers(DepartmentManagersDTO departmentManagersDTO)
@@ -708,6 +712,28 @@ namespace CodeCraft_TeamFinder_Services
             }
 
             return projectManagersList;
+        }
+
+        public async Task<bool> RemoveSystemRole(RemoveSystemRoleDTO removeSystemRoleDTO)
+        {
+            var user = await _repository.Get(removeSystemRoleDTO.UserID);
+
+            if (user != null)
+            {
+                if (user.SystemRoleIDs != null)
+                {
+                    if (user.SystemRoleIDs.Contains(removeSystemRoleDTO.SystemRoleID))
+                    {
+                        user.SystemRoleIDs.Remove(removeSystemRoleDTO.SystemRoleID);
+
+                        bool userUpdated = await _repository.Update(user);
+
+                        return userUpdated;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public async Task<IEnumerable<User>> GetEmployees(string id)
@@ -796,7 +822,7 @@ namespace CodeCraft_TeamFinder_Services
                 }
             }
 
-            
+
 
             return false;
         }

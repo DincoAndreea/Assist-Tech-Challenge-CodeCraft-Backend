@@ -50,11 +50,11 @@ namespace CodeCraft_TeamFinder_Services
 
                 foreach (var user in users ?? Enumerable.Empty<User>())
                 {
-                    var projects = (await _projectService.Value.GetEmployeeProjects(user.Id)).CurrentProjects;
+                    var projects = (await _projectService.Value.GetEmployeeProjectsLists(user.Id)).CurrentProjects;
 
-                    foreach (var project in projects ?? Enumerable.Empty<ProjectInformation>())
+                    foreach (var project in projects ?? Enumerable.Empty<Project>())
                     {
-                        var projectDetails = await _projectService.Value.Get(project.ProjectID);
+                        var projectDetails = await _projectService.Value.Get(project.Id);
 
                         if (projectDetails != null)
                         {
