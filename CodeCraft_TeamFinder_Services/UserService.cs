@@ -242,13 +242,13 @@ namespace CodeCraft_TeamFinder_Services
                         }
                     }
 
-                    if (workHours < 8 && (matchSkills > 0 || matchSkillRequirements > 0) && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    if (workHours < 8 && workHours > 0 && (matchSkills > 0 || matchSkillRequirements > 0) && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersPartiallyAvailableList.Add(member);
                     }
 
-                    if ((workHours < 8 && (matchSkills > 0 || matchSkillRequirements > 0) && !teamFinderRequestDTO.PastExperience) || (workHours < 8 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    if ((workHours < 8 && workHours > 0 && (matchSkills > 0 || matchSkillRequirements > 0) && !teamFinderRequestDTO.PastExperience) || (workHours < 8 && workHours > 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersPartiallyAvailableList.Add(member);
@@ -497,6 +497,8 @@ namespace CodeCraft_TeamFinder_Services
                         }
                     }
 
+                    int inactive = 0;
+
                     if (projectIDs != null)
                     {
                         foreach (var projectID in projectIDs ?? Enumerable.Empty<string>())
@@ -510,6 +512,11 @@ namespace CodeCraft_TeamFinder_Services
                                 if (projectTeam.TeamMembers != null)
                                 {
                                     var teamMember = projectTeam.TeamMembers.Where(x => x.UserID == user.Id).FirstOrDefault();
+
+                                    if (!teamMember.Active)
+                                    {
+                                        inactive++;
+                                    }
 
                                     if (!teamMember.Active && teamMember.TeamRoleIDs.Intersect(teamFinderRequestDTO.TeamRoleIDs).Count() > 0 && teamFinderRequestDTO.TechnologyStack.Intersect(project.TechnologyStack).Count() > 0)
                                     {
@@ -525,13 +532,13 @@ namespace CodeCraft_TeamFinder_Services
                         }
                     }
 
-                    if (workHours == 0 && (matchSkills > 0 || matchSkillRequirements > 0) && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
+                    if (workHours == 0 && ((user.ProjectIDs != null && inactive == user.ProjectIDs.Count()) || user.ProjectIDs == null || user.ProjectIDs.Count() == 0) && (matchSkills > 0 || matchSkillRequirements > 0) && matchTeamRolesAndTechnologyOnPastProject > 0 && teamFinderRequestDTO.PastExperience)
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersAvailableList.Add(member);
                     }
 
-                    if ((workHours == 0 && (matchSkills > 0 || matchSkillRequirements > 0) && !teamFinderRequestDTO.PastExperience) || (workHours == 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
+                    if ((workHours == 0 && ((user.ProjectIDs != null && inactive == user.ProjectIDs.Count()) || user.ProjectIDs == null || user.ProjectIDs.Count() == 0) && (matchSkills > 0 || matchSkillRequirements > 0) && !teamFinderRequestDTO.PastExperience) || (workHours == 0 && matchTeamRolesAndTechnologyOnPastProject > 0 && !teamFinderRequestDTO.PastExperience))
                     {
                         TeamFinderResponseDTO member = new TeamFinderResponseDTO { User = user, WorkHours = workHours };
                         usersAvailableList.Add(member);
@@ -548,17 +555,17 @@ namespace CodeCraft_TeamFinder_Services
             {
                 if (teamFinderRequestDTO.ProjectsCloseToFinish)
                 {
-                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO));
+                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO)).DistinctBy(x => x.User.Email);
                 }
 
                 if (teamFinderRequestDTO.Unavailable)
                 {
-                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
+                    return (await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO)).DistinctBy(x => x.User.Email);
                 }
 
                 if (teamFinderRequestDTO.ProjectsCloseToFinish && teamFinderRequestDTO.Unavailable)
                 {
-                    return ((await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO))).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
+                    return ((await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO)).Concat(await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO))).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO)).DistinctBy(x => x.User.Email);
                 }
 
                 return await this.GetPartiallyAvailableEmployees(teamFinderRequestDTO);
@@ -568,7 +575,7 @@ namespace CodeCraft_TeamFinder_Services
             {
                 if (teamFinderRequestDTO.Unavailable)
                 {
-                    return (await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO));
+                    return (await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO)).Concat(await this.GetUnavailableEmployees(teamFinderRequestDTO)).DistinctBy(x => x.User.Email);
                 }
 
                 return await this.GetEmployeesOnProjectsCloseToFinish(teamFinderRequestDTO);
@@ -600,12 +607,15 @@ namespace CodeCraft_TeamFinder_Services
                 {
                     var skillRequirementDetails = await _skillService.Value.Get(skillRequirements[i].SkillID);
 
-                    skillProject += $"{skillRequirementDetails.Name} (Minimum Level: {skillRequirements[i].MinimumLevel}), ";
-
-                    if (i == skillRequirements.Count() - 1)
+                    if (skillRequirementDetails != null)
                     {
-                        skillProject += $"{skillRequirementDetails.Name} (Minimum Level: {skillRequirements[i].MinimumLevel}).";
-                    }
+                        skillProject += $"{skillRequirementDetails.Name} (Minimum Level: {skillRequirements[i].MinimumLevel}), ";
+
+                        if (i == skillRequirements.Count() - 1)
+                        {
+                            skillProject += $"{skillRequirementDetails.Name} (Minimum Level: {skillRequirements[i].MinimumLevel}).";
+                        }
+                    }                    
                 }
             }
 
@@ -625,12 +635,15 @@ namespace CodeCraft_TeamFinder_Services
                     {
                         var skillDetails = await _skillService.Value.Get(skillsUser[j].SkillID);
 
-                        usersString += $"{skillDetails.Name} (Level: {skillsUser[j].Level}, Experience: {skillsUser[j].Experience}), ";
-
-                        if (j == skillsUser.Count() - 1)
+                        if (skillDetails != null)
                         {
-                            usersString += $"{skillDetails.Name} (Level: {skillsUser[j].Level}, Experience: {skillsUser[j].Experience}).";
-                        }
+                            usersString += $"{skillDetails.Name} (Level: {skillsUser[j].Level}, Experience: {skillsUser[j].Experience}), ";
+
+                            if (j == skillsUser.Count() - 1)
+                            {
+                                usersString += $"{skillDetails.Name} (Level: {skillsUser[j].Level}, Experience: {skillsUser[j].Experience}).";
+                            }
+                        }                       
                     }
                 }
             }
